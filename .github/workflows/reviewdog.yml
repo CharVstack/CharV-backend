@@ -1,0 +1,43 @@
+name: reviewdog
+
+on:
+  - pull_request
+
+jobs:
+  govet:
+    name: runner / govet
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: run govet
+        uses: reviewdog/action-golangci-lint@v2
+        with:
+          golangci_lint_flags: "--disable-all -E govet"
+          tool_name: govet
+          level: warning
+          reporter: github-pr-review
+
+  goimports:
+    name: runner / goimports
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: run goimports
+        uses: reviewdog/action-golangci-lint@v2
+        with:
+          golangci_lint_flags: "--disable-all -E goimports"
+          tool_name: goimports
+          level: warning
+          reporter: github-pr-review
+
+  misspell:
+    name: runner / misspell
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: run misspell
+        uses: reviewdog/action-misspell@v1
+        with:
+          level: warning
+          locale: US
+          reporter: github-pr-review
