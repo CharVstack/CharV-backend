@@ -1,0 +1,16 @@
+openapi: 3.0.0
+info:
+  description: A sample API to illustrate OpenAPI concepts
+  title: Sample API
+  version: 1.0.0
+servers:
+- url: /
+paths:
+  /list:
+    get:
+      description: Returns a list of stuff
+      responses:
+        "200":
+          description: Successful response
+components:
+  schemas: {}
