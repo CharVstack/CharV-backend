@@ -1,0 +1,175 @@
+openapi: 3.0.0
+info:
+  description: A sample API to illustrate OpenAPI concepts
+  title: CharVstack-API
+  version: 1.0.0
+servers:
+- url: "{server}/api/v1"
+  variables:
+    server:
+      default: http://localhost:8080
+paths:
+  /vms:
+    get:
+      operationId: get-api-v1-vm
+      parameters:
+      - description: レスポンスの開始位置
+        explode: true
+        in: query
+        name: offset
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: レスポンスの終了位置
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    vms:
+                    - cpu: 0
+                      memory: 0
+                      id: string
+                      name: string
+                    total: 0
+              schema:
+                $ref: '#/components/schemas/get_api_v1_vm_200_response'
+          description: OK
+      summary: VM一覧の取得
+      tags: []
+    post:
+      operationId: post-api-v1-vm
+      responses:
+        "201":
+          description: Created
+          headers:
+            Location:
+              description: 作成されたリソースのURI
+              explode: false
+              schema:
+                type: string
+              style: simple
+      summary: VMの作成
+      tags: []
+  /vms/{vmId}:
+    delete:
+      operationId: delete-vm-vmId
+      parameters:
+      - description: VMのID
+        explode: false
+        in: path
+        name: vmId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: No Content
+      summary: VMの削除
+      tags: []
+    get:
+      operationId: get-vm-vmId
+      parameters:
+      - description: VMのID
+        explode: false
+        in: path
+        name: vmId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/get_vm_vmId_200_response'
+          description: OK
+      summary: VMの情報
+      tags: []
+    patch:
+      operationId: patch-vms-vmId
+      parameters:
+      - description: VMのID
+        explode: false
+        in: path
+        name: vmId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: OK
+      summary: VMの更新
+components:
+  schemas:
+    get_api_v1_vm_200_response_vms_inner:
+      example:
+        memory: 6
+        name: name
+        cpu: 0
+        id: id
+      properties:
+        cpu:
+          type: integer
+        memory:
+          type: integer
+        id:
+          type: string
+        name:
+          type: string
+      type: object
+    get_api_v1_vm_200_response:
+      example:
+        total: 1
+        vms:
+        - memory: 6
+          name: name
+          cpu: 0
+          id: id
+        - memory: 6
+          name: name
+          cpu: 0
+          id: id
+      properties:
+        vms:
+          items:
+            $ref: '#/components/schemas/get_api_v1_vm_200_response_vms_inner'
+          type: array
+        total:
+          type: integer
+      type: object
+    get_vm_vmId_200_response:
+      example:
+        memory: 6
+        name: name
+        cpu: 0
+        id: id
+      properties:
+        cpu:
+          type: integer
+        memory:
+          type: integer
+        id:
+          type: string
+        name:
+          type: string
+      type: object
+      x-examples:
+        example-1:
+          cpu: 0
+          memory: 0
+          id: string
+          name: string
