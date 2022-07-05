@@ -1,31 +1,15 @@
 openapi: 3.0.0
 info:
-  description: A sample API to illustrate OpenAPI concepts
   title: CharVstack-API
-  version: 1.0.0
+  version: "1.0"
 servers:
-- url: /api/v1
+- url: http://localhost:3000/api/v1
+tags:
+- name: vm
 paths:
   /vms:
     get:
-      operationId: get-api-v1-vm
-      parameters:
-      - description: レスポンスの開始位置
-        explode: true
-        in: query
-        name: offset
-        required: false
-        schema:
-          type: integer
-        style: form
-      - description: レスポンスの終了位置
-        explode: true
-        in: query
-        name: limit
-        required: false
-        schema:
-          type: integer
-        style: form
+      operationId: get-api-v1-vms
       responses:
         "200":
           content:
@@ -34,52 +18,46 @@ paths:
                 example-1:
                   value:
                     vms:
-                    - cpu: 0
-                      memory: 0
-                      id: string
-                      name: string
-                    total: 0
+                    - name: ubuntu20.04
+                      metadata:
+                        id: v1
+                        api_version: 4e0a3c48-f483-422a-b520-2820207cef42
+                      memory: 2048
+                      vcpu: 4
+                      devices:
+                        disk:
+                        - type: qcow2
+                          path: /var/lib/libvirt/images/ubuntu22.04.qcow2
               schema:
-                $ref: '#/components/schemas/get_api_v1_vm_200_response'
+                $ref: '#/components/schemas/get_api_v1_vms_200_response'
           description: OK
-      summary: VM一覧の取得
-      tags: []
+      summary: Get all VMs list
+      tags:
+      - vm
     post:
-      operationId: post-api-v1-vm
+      operationId: post-api-v1-vms
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  name: ubuntu20.04
+                  memory: 2048
+                  vcpu: 4
+            schema:
+              $ref: '#/components/schemas/post_api_v1_vms_request'
       responses:
-        "201":
-          description: Created
-          headers:
-            Location:
-              description: 作成されたリソースのURI
-              explode: false
-              schema:
-                type: string
-              style: simple
-      summary: VMの作成
-      tags: []
+        "200":
+          description: OK
+      summary: Create a new VM
+      tags:
+      - vm
   /vms/{vmId}:
-    delete:
-      operationId: delete-vm-vmId
-      parameters:
-      - description: VMのID
-        explode: false
-        in: path
-        name: vmId
-        required: true
-        schema:
-          type: string
-        style: simple
-      responses:
-        "204":
-          description: No Content
-      summary: VMの削除
-      tags: []
     get:
-      operationId: get-vm-vmId
+      operationId: get-api-v1-vms-vmId
       parameters:
-      - description: VMのID
-        explode: false
+      - explode: false
         in: path
         name: vmId
         required: true
@@ -90,83 +68,246 @@ paths:
         "200":
           content:
             application/json:
+              examples:
+                example-1:
+                  value:
+                    name: ubuntu20.04
+                    metadata:
+                      id: v1
+                      api_version: 4e0a3c48-f483-422a-b520-2820207cef42
+                    memory: 2048
+                    vcpu: 4
+                    devices:
+                      disk:
+                      - type: qcow2
+                        path: /var/lib/libvirt/images/ubuntu22.04.qcow2
               schema:
-                $ref: '#/components/schemas/get_vm_vmId_200_response'
+                $ref: '#/components/schemas/vm'
           description: OK
-      summary: VMの情報
-      tags: []
+      summary: Get a VM
+      tags:
+      - vm
     patch:
-      operationId: patch-vms-vmId
+      operationId: patch-api-v1-vms-vmId
       parameters:
-      - description: VMのID
-        explode: false
+      - explode: false
         in: path
         name: vmId
         required: true
         schema:
           type: string
         style: simple
+      requestBody:
+        content:
+          application/json:
+            examples:
+              example-1:
+                value:
+                  name: centos_stream
+                  memory: 1024
+                  vcpu: 2
+            schema:
+              $ref: '#/components/schemas/patch_api_v1_vms_vmId_request'
       responses:
         "200":
           description: OK
-      summary: VMの更新
+      summary: Update a VM
+      tags:
+      - vm
+  /host:
+    get:
+      operationId: get-api-v1-host
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    cpu: 4
+                    memory: 2048
+                    storage_pools:
+                    - name: default
+                      total_size: 20000
+                      used_size: 10000
+                      path: /var/lib/libvirt/images
+                      status: active
+              schema:
+                $ref: '#/components/schemas/get_api_v1_host_200_response'
+          description: OK
+      summary: Get a host
+      tags:
+      - host
 components:
   schemas:
-    get_api_v1_vm_200_response_vms_inner:
+    vm:
+      description: ""
       example:
-        memory: 6
+        metadata:
+          id: id
+          api_version: api_version
+        memory: 0
+        vcpu: 6
+        devices:
+          disk:
+          - path: path
+            type: type
+          - path: path
+            type: type
         name: name
-        cpu: 0
-        id: id
       properties:
-        cpu:
-          type: integer
-        memory:
-          type: integer
-        id:
-          type: string
         name:
           type: string
+        metadata:
+          $ref: '#/components/schemas/vm_metadata'
+        memory:
+          type: integer
+        vcpu:
+          type: integer
+        devices:
+          $ref: '#/components/schemas/vm_devices'
+      title: vm
       type: object
-    get_api_v1_vm_200_response:
+      x-stoplight:
+        id: 5txew3qu80ak2
+      x-tags:
+      - vm
+    storage_pool:
       example:
-        total: 1
+        path: path
+        name: name
+        total_size: 1
+        used_size: 5
+        status: status
+      properties:
+        name:
+          type: string
+        total_size:
+          type: integer
+        used_size:
+          type: integer
+        path:
+          type: string
+        status:
+          type: string
+      title: storage_pool
+      type: object
+      x-stoplight:
+        id: aeklue11tdj8x
+      x-tags:
+      - host
+    get_api_v1_vms_200_response:
+      example:
         vms:
-        - memory: 6
+        - metadata:
+            id: id
+            api_version: api_version
+          memory: 0
+          vcpu: 6
+          devices:
+            disk:
+            - path: path
+              type: type
+            - path: path
+              type: type
           name: name
-          cpu: 0
-          id: id
-        - memory: 6
+        - metadata:
+            id: id
+            api_version: api_version
+          memory: 0
+          vcpu: 6
+          devices:
+            disk:
+            - path: path
+              type: type
+            - path: path
+              type: type
           name: name
-          cpu: 0
-          id: id
       properties:
         vms:
           items:
-            $ref: '#/components/schemas/get_api_v1_vm_200_response_vms_inner'
+            $ref: '#/components/schemas/vm'
           type: array
-        total:
+      type: object
+    post_api_v1_vms_request:
+      properties:
+        name:
+          type: string
+        memory:
+          type: integer
+        vcpu:
+          type: integer
+      required:
+      - memory
+      - name
+      - vcpu
+      type: object
+    patch_api_v1_vms_vmId_request:
+      properties:
+        name:
+          type: string
+        memory:
+          type: integer
+        vcpu:
           type: integer
       type: object
-    get_vm_vmId_200_response:
+    get_api_v1_host_200_response:
       example:
         memory: 6
-        name: name
+        storage_pools:
+        - path: path
+          name: name
+          total_size: 1
+          used_size: 5
+          status: status
+        - path: path
+          name: name
+          total_size: 1
+          used_size: 5
+          status: status
         cpu: 0
-        id: id
       properties:
         cpu:
           type: integer
         memory:
           type: integer
+        storage_pools:
+          items:
+            $ref: '#/components/schemas/storage_pool'
+          type: array
+      type: object
+    vm_metadata:
+      example:
+        id: id
+        api_version: api_version
+      properties:
         id:
           type: string
-        name:
+        api_version:
           type: string
       type: object
-      x-examples:
-        example-1:
-          cpu: 0
-          memory: 0
-          id: string
-          name: string
+    vm_devices_disk_inner:
+      example:
+        path: path
+        type: type
+      properties:
+        type:
+          type: string
+        path:
+          type: string
+      type: object
+    vm_devices:
+      example:
+        disk:
+        - path: path
+          type: type
+        - path: path
+          type: type
+      properties:
+        disk:
+          items:
+            $ref: '#/components/schemas/vm_devices_disk_inner'
+          type: array
+      type: object
+x-stoplight:
+  id: 291epccbgj72d
