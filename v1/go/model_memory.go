@@ -10,11 +10,11 @@
 package openapi
 
 type Memory struct {
-	Total int32 `json:"total,omitempty"`
+	Total uint64 `json:"total,omitempty"`
 
-	Used int32 `json:"used,omitempty"`
+	Used uint64 `json:"used,omitempty"`
 
-	Free int32 `json:"free,omitempty"`
+	Free uint64 `json:"free,omitempty"`
 
-	UsedPercent float32 `json:"used_percent,omitempty"`
+	UsedPercent float64 `json:"used_percent,omitempty"`
 }

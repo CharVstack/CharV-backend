@@ -10,7 +10,7 @@
 package openapi
 
 type Cpu struct {
-	Cpu int32 `json:"cpu,omitempty"`
+	Cpu int `json:"cpu"`
 
-	CpuMhz float32 `json:"cpu_mhz,omitempty"`
+	CpuMhz float64 `json:"cpu_mhz,omitempty"`
 }

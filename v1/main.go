@@ -10,17 +10,20 @@
 package main
 
 import (
+	"fmt"
+	sw "github.com/CharVstack/CharV-backend/v1/go"
+	"github.com/joho/godotenv"
 	"log"
-
-	// WARNING!
-	// Change this to a fully-qualified import path
-	// once you place this file into your project.
-	// For example,
-	//
-	//sw "github.com/GIT_USER_ID/GIT_REPO_ID/go"
-	//
-	sw "./go"
+	"os"
 )
+
+func init() {
+	err := godotenv.Load("./.env")
+	if err != nil {
+		fmt.Printf(err.Error())
+		os.Exit(2)
+	}
+}
 
 func main() {
 	log.Printf("Server started")

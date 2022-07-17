@@ -12,9 +12,9 @@ package openapi
 type StoragePool struct {
 	Name string `json:"name,omitempty"`
 
-	TotalSize int32 `json:"total_size,omitempty"`
+	TotalSize uint64 `json:"total_size,omitempty"`
 
-	UsedSize int32 `json:"used_size,omitempty"`
+	UsedSize uint64 `json:"used_size,omitempty"`
 
 	Path string `json:"path,omitempty"`
 
