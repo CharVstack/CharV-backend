@@ -17,7 +17,7 @@ type Memory struct {
 	UsedPercent TypeFloat64 `json:"used_percent"`
 }
 
-// StoragePool defines model for storage_pool.
+// StoragePool defines model for storagePool.
 type StoragePool struct {
 	Name      string     `json:"name"`
 	Path      string     `json:"path"`
