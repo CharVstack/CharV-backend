@@ -39,7 +39,7 @@ func (v V1Handler) GetApiV1Vms(c *gin.Context) {
 	//TODO implement me
 	c.JSON(http.StatusOK, gin.H{
 		"message": getVmTestData,
-		//"vms":     getVmsInfo,
+		"vms":     getVmsInfo,
 	})
 }
 
