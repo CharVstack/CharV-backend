@@ -43,9 +43,40 @@ func (v V1Handler) GetApiV1Vms(c *gin.Context) {
 	})
 }
 
+func CreateVm(vmInfo PostApiV1VmsJSONRequestBody) (error, error) {
+	getVmInfo := qemu.InstallOpts{
+		Name:   vmInfo.Name,
+		Memory: vmInfo.Memory,
+		VCpu:   vmInfo.Vcpu,
+		Image:  "ubuntu-20.04.5-live-server-amd64.iso",
+		Disk:   vmInfo.Name + "disk",
+	}
+
+	createDisk := qemu.CreateDisk(getVmInfo.Disk)
+	createVm := qemu.Install(getVmInfo)
+
+	return createDisk, createVm
+}
+
+// PostApiV1Vms Vm作成時にフロントから情報を受取りステータスを返す
 func (v V1Handler) PostApiV1Vms(c *gin.Context) {
-	//TODO implement me
-	panic("implement me")
+	var getJsonData PostApiV1VmsJSONRequestBody
+	if err := c.ShouldBindJSON(&getJsonData); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	createDiskErr, createVmErr := CreateVm(getJsonData)
+	if createDiskErr != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": createDiskErr.Error()})
+		return
+	}
+	if createVmErr != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": createVmErr.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{})
 }
 
 func (v V1Handler) GetApiV1VmsVmId(c *gin.Context, vmId string) {
