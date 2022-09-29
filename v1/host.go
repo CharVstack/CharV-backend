@@ -9,7 +9,7 @@ import (
 func getCpuInfo(getInfo host.Host) Cpu {
 	cpuInfo := Cpu{
 		Counts:  getInfo.Cpu.Counts,
-		Percent: uint64(getInfo.Cpu.Percent),
+		Percent: TypeFloat64(getInfo.Cpu.Percent),
 	}
 
 	return cpuInfo
