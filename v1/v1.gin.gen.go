@@ -14,19 +14,19 @@ import (
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// Get a host
-	// (GET /host)
+	// (GET /api/v1/host)
 	GetApiV1Host(c *gin.Context)
 	// Get all VMs list
-	// (GET /vms)
+	// (GET /api/v1/vms)
 	GetApiV1Vms(c *gin.Context)
 	// Create a new VM
-	// (POST /vms)
+	// (POST /api/v1/vms)
 	PostApiV1Vms(c *gin.Context)
 	// Get a VM
-	// (GET /vms/{vmId})
+	// (GET /api/v1/vms/{vmId})
 	GetApiV1VmsVmId(c *gin.Context, vmId string)
 	// Update a VM
-	// (PATCH /vms/{vmId})
+	// (PATCH /api/v1/vms/{vmId})
 	PatchApiV1VmsVmId(c *gin.Context, vmId string)
 }
 
@@ -128,15 +128,15 @@ func RegisterHandlersWithOptions(router *gin.Engine, si ServerInterface, options
 		HandlerMiddlewares: options.Middlewares,
 	}
 
-	router.GET(options.BaseURL+"/host", wrapper.GetApiV1Host)
+	router.GET(options.BaseURL+"/api/v1/host", wrapper.GetApiV1Host)
 
-	router.GET(options.BaseURL+"/vms", wrapper.GetApiV1Vms)
+	router.GET(options.BaseURL+"/api/v1/vms", wrapper.GetApiV1Vms)
 
-	router.POST(options.BaseURL+"/vms", wrapper.PostApiV1Vms)
+	router.POST(options.BaseURL+"/api/v1/vms", wrapper.PostApiV1Vms)
 
-	router.GET(options.BaseURL+"/vms/:vmId", wrapper.GetApiV1VmsVmId)
+	router.GET(options.BaseURL+"/api/v1/vms/:vmId", wrapper.GetApiV1VmsVmId)
 
-	router.PATCH(options.BaseURL+"/vms/:vmId", wrapper.PatchApiV1VmsVmId)
+	router.PATCH(options.BaseURL+"/api/v1/vms/:vmId", wrapper.PatchApiV1VmsVmId)
 
 	return router
 }
