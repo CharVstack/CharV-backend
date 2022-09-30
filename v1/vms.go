@@ -43,6 +43,7 @@ func (v V1Handler) GetApiV1Vms(c *gin.Context) {
 	})
 }
 
+// CreateVm diskとVmをcharV-libの関数から作成する
 func CreateVm(vmInfo PostApiV1VmsJSONRequestBody) (error, error) {
 	getVmInfo := qemu.InstallOpts{
 		Name:   vmInfo.Name,
@@ -68,11 +69,11 @@ func (v V1Handler) PostApiV1Vms(c *gin.Context) {
 
 	createDiskErr, createVmErr := CreateVm(getJsonData)
 	if createDiskErr != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": createDiskErr.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error: Disk not created": createDiskErr.Error()})
 		return
 	}
 	if createVmErr != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": createVmErr.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error: Vm not created": createVmErr.Error()})
 		return
 	}
 
