@@ -12,6 +12,7 @@ package main
 import (
 	"fmt"
 	"github.com/CharVstack/CharV-backend/openapi/v1"
+	"github.com/CharVstack/CharV-backend/openapi/v1/delivery"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"log"
@@ -29,7 +30,7 @@ func init() {
 func main() {
 	r := gin.Default()
 
-	handler := openapi.V1Handler{}
+	handler := delivery.V1Handler{}
 
 	router := openapi.RegisterHandlers(r, handler)
 
