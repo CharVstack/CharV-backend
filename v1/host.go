@@ -1,9 +1,10 @@
 package openapi
 
 import (
+	"net/http"
+
 	"github.com/CharVstack/CharV-lib/host"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 func getCpuInfo(getInfo host.Host) Cpu {

@@ -2,11 +2,12 @@ package openapi
 
 import (
 	"fmt"
-	"github.com/CharVstack/CharV-lib/host"
-	"github.com/joho/godotenv"
 	"os"
 	"reflect"
 	"testing"
+
+	"github.com/CharVstack/CharV-lib/host"
+	"github.com/joho/godotenv"
 )
 
 func init() {
