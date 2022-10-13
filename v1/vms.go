@@ -2,9 +2,10 @@ package openapi
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/CharVstack/CharV-lib/qemu"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 func GetVmsInfo() ([]string, Vm) {
