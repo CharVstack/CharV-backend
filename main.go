@@ -11,7 +11,7 @@ package main
 
 import (
 	"fmt"
-	openapi "github.com/CharVstack/CharV-backend/v1"
+	"github.com/CharVstack/CharV-backend/openapi"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"log"
