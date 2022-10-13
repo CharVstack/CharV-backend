@@ -1,22 +1,30 @@
-package delivery
+package handler
 
 import (
-	"fmt"
 	"github.com/CharVstack/CharV-backend/openapi/v1"
-	"github.com/CharVstack/CharV-backend/openapi/v1/usecase/vms"
-	"net/http"
-
+	backendHost "github.com/CharVstack/CharV-backend/usecase/host"
+	"github.com/CharVstack/CharV-backend/usecase/vms"
+	"github.com/CharVstack/CharV-lib/host"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
-func (v V1Handler) GetApiV1Vms(c *gin.Context) {
-	getVmTestData, getVmsInfo := vms.GetVmsInfo()
-	fmt.Println("getVmsInfo: ", getVmsInfo)
-	//TODO implement me
+// V1Handler 引数を返さないので空
+type V1Handler struct{}
+
+func (v V1Handler) GetApiV1Host(c *gin.Context) {
+	getInfo := host.GetInfo()
+	hostInfo := backendHost.GetHostInfo(getInfo)
 	c.JSON(http.StatusOK, gin.H{
-		"message": getVmTestData,
-		"vms":     getVmsInfo,
+		"cpu":           hostInfo.Cpu,
+		"mem":           hostInfo.Mem,
+		"storage_pools": hostInfo.StoragePools,
 	})
+}
+
+func (v V1Handler) GetApiV1Vms(c *gin.Context) {
+	//TODO implement me
+	panic("implement me")
 }
 
 // PostApiV1Vms Vm作成時にフロントから情報を受取りステータスを返す

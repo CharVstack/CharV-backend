@@ -1,7 +1,7 @@
 package host
 
 import (
-	"github.com/CharVstack/CharV-backend/openapi/v1/domain"
+	"github.com/CharVstack/CharV-backend/domain"
 	"github.com/CharVstack/CharV-lib/host"
 )
 

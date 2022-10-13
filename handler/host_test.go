@@ -1,10 +1,10 @@
-package delivery
+package handler
 
 import (
 	"fmt"
+	"github.com/CharVstack/CharV-backend/domain"
 	"github.com/CharVstack/CharV-backend/openapi/v1"
-	"github.com/CharVstack/CharV-backend/openapi/v1/domain"
-	backendHost "github.com/CharVstack/CharV-backend/openapi/v1/usecase/host"
+	backendHost "github.com/CharVstack/CharV-backend/usecase/host"
 	"os"
 	"reflect"
 	"testing"
