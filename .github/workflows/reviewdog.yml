@@ -41,3 +41,14 @@ jobs:
           level: warning
           locale: US
           reporter: github-pr-review
+
+  tidy:
+    name: runner / gomodtidy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: "1.18"
+      - name: run go mod tidy
+        run: go mod tidy && git diff -s --exit-code go.sum
