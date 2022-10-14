@@ -14,8 +14,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/CharVstack/CharV-backend/adapters"
 	"github.com/CharVstack/CharV-backend/handler"
-	"github.com/CharVstack/CharV-backend/openapi/v1"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -33,7 +33,7 @@ func main() {
 
 	getHandler := handler.V1Handler{}
 
-	router := openapi.RegisterHandlers(r, getHandler)
+	router := adapters.RegisterHandlers(r, getHandler)
 
 	log.Fatal(router.Run(":8080"))
 }

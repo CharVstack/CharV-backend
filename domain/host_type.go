@@ -1,9 +1,9 @@
 package domain
 
-import "github.com/CharVstack/CharV-backend/openapi/v1"
+import "github.com/CharVstack/CharV-backend/adapters"
 
 type GetApiV1Host200Response struct {
-	Cpu          openapi.Cpu           `json:"cpu"`
-	Mem          openapi.Memory        `json:"mem"`
-	StoragePools []openapi.StoragePool `json:"storage_pools"`
+	Cpu          adapters.Cpu           `json:"cpu"`
+	Mem          adapters.Memory        `json:"mem"`
+	StoragePools []adapters.StoragePool `json:"storage_pools"`
 }
