@@ -4,16 +4,21 @@ import (
 	"github.com/CharVstack/CharV-backend/openapi/v1"
 	backendHost "github.com/CharVstack/CharV-backend/usecase/host"
 	"github.com/CharVstack/CharV-backend/usecase/vms"
-	"github.com/CharVstack/CharV-lib/host"
+	"github.com/CharVstack/CharV-lib/pkg/host"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"os"
 )
 
 // V1Handler 引数を返さないので空
 type V1Handler struct{}
 
 func (v V1Handler) GetApiV1Host(c *gin.Context) {
-	getInfo := host.GetInfo()
+	storageDirEnv := os.Getenv("STORAGE_DIR")
+	storageDir := host.GetInfoOptions{
+		StorageDir: storageDirEnv,
+	}
+	getInfo := host.GetInfo(storageDir)
 	hostInfo := backendHost.GetHostInfo(getInfo)
 	c.JSON(http.StatusOK, gin.H{
 		"cpu":           hostInfo.Cpu,

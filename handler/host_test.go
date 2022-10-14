@@ -5,12 +5,11 @@ import (
 	"github.com/CharVstack/CharV-backend/domain"
 	"github.com/CharVstack/CharV-backend/openapi/v1"
 	backendHost "github.com/CharVstack/CharV-backend/usecase/host"
+	"github.com/CharVstack/CharV-lib/pkg/host"
+	"github.com/joho/godotenv"
 	"os"
 	"reflect"
 	"testing"
-
-	"github.com/CharVstack/CharV-lib/host"
-	"github.com/joho/godotenv"
 )
 
 func init() {
@@ -30,7 +29,11 @@ func TransStruct(getInfo host.Host) (openapi.Cpu, openapi.Memory, []openapi.Stor
 }
 
 func TestGetHostInfo(t *testing.T) {
-	var getHostInfo = host.GetInfo()
+	storageDirEnv := os.Getenv("STORAGE_DIR")
+	storageDir := host.GetInfoOptions{
+		StorageDir: storageDirEnv,
+	}
+	var getHostInfo = host.GetInfo(storageDir)
 	var cpuInfo, memoryInfo, storageInfo = TransStruct(getHostInfo)
 	type args struct {
 		getInfo host.Host

@@ -2,7 +2,7 @@ package host
 
 import (
 	"github.com/CharVstack/CharV-backend/domain"
-	"github.com/CharVstack/CharV-lib/host"
+	"github.com/CharVstack/CharV-lib/pkg/host"
 )
 
 func GetHostInfo(getInfo host.Host) domain.GetApiV1Host200Response {

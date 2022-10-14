@@ -2,7 +2,7 @@ package host
 
 import (
 	"github.com/CharVstack/CharV-backend/openapi/v1"
-	"github.com/CharVstack/CharV-lib/host"
+	"github.com/CharVstack/CharV-lib/pkg/host"
 )
 
 func GetStorageInfo(getInfo host.Host) []openapi.StoragePool {

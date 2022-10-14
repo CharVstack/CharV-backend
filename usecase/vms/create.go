@@ -2,7 +2,7 @@ package vms
 
 import (
 	"github.com/CharVstack/CharV-backend/openapi/v1"
-	"github.com/CharVstack/CharV-lib/qemu"
+	"github.com/CharVstack/CharV-lib/pkg/qemu"
 )
 
 // CreateVm diskとVmをcharV-libの関数から作成する
