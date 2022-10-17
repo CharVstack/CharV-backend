@@ -1,12 +1,12 @@
 package vms
 
 import (
-	"github.com/CharVstack/CharV-backend/openapi/v1"
+	"github.com/CharVstack/CharV-backend/adapters"
 	"github.com/CharVstack/CharV-lib/pkg/qemu"
 )
 
 // CreateVm diskとVmをcharV-libの関数から作成する
-func CreateVm(vmInfo openapi.PostApiV1VmsJSONRequestBody) (error, error) {
+func CreateVm(vmInfo adapters.PostApiV1VmsJSONRequestBody) (error, error) {
 	getVmInfo := qemu.InstallOpts{
 		Name:   vmInfo.Name,
 		Memory: vmInfo.Memory,
