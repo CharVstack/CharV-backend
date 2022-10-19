@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/CharVstack/CharV-backend/domain"
+	"github.com/CharVstack/CharV-backend/domain/models"
 	backendHost "github.com/CharVstack/CharV-backend/usecase/host"
 	"github.com/CharVstack/CharV-lib/pkg/host"
 	"github.com/joho/godotenv"
@@ -20,7 +21,7 @@ func init() {
 	}
 }
 
-func TransStruct(getInfo host.Host) (openapi.Cpu, openapi.Memory, []openapi.StoragePool) {
+func TransStruct(getInfo host.Host) (models.Cpu, models.Memory, []models.StoragePool) {
 	cpuStruct := backendHost.GetCpuInfo(getInfo)
 	memoryStruct := backendHost.GetMemoryInfo(getInfo)
 	storageStruct := backendHost.GetStorageInfo(getInfo)
