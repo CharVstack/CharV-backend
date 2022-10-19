@@ -13,9 +13,11 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/CharVstack/CharV-backend/adapters"
 	"github.com/CharVstack/CharV-backend/handler"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -29,7 +31,23 @@ func init() {
 }
 
 func main() {
+
 	r := gin.Default()
+	r.Use(cors.New(cors.Config{
+		AllowOrigins: []string{
+			os.Getenv("ORIGIN_URI"),
+		},
+		AllowMethods: []string{
+			"GET",
+			"POST",
+			"OPTIONS",
+		},
+		AllowHeaders: []string{
+			"Content-Type",
+		},
+		AllowCredentials: false,
+		MaxAge:           24 * time.Hour,
+	}))
 
 	getHandler := handler.V1Handler{}
 
