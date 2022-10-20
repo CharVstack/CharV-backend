@@ -17,6 +17,7 @@ import (
 
 	"github.com/CharVstack/CharV-backend/adapters"
 	"github.com/CharVstack/CharV-backend/handler"
+	middleware "github.com/deepmap/oapi-codegen/pkg/gin-middleware"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -31,8 +32,14 @@ func init() {
 }
 
 func main() {
-
 	r := gin.Default()
+
+	swagger, err := adapters.GetSwagger()
+	if err != nil {
+		log.Fatal(err)
+	}
+	r.Use(middleware.OapiRequestValidator(swagger))
+
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: []string{
 			os.Getenv("ORIGIN_URI"),
@@ -53,5 +60,7 @@ func main() {
 
 	router := adapters.RegisterHandlers(r, getHandler)
 
-	log.Fatal(router.Run(":8080"))
+	if err := router.Run(":8080"); err != nil {
+		log.Fatal(err)
+	}
 }
