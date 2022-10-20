@@ -1,13 +1,13 @@
 package host
 
 import (
-	"github.com/CharVstack/CharV-backend/domain"
-	"github.com/CharVstack/CharV-lib/pkg/host"
+	backendDomain "github.com/CharVstack/CharV-backend/domain"
+	"github.com/CharVstack/CharV-lib/domain"
 )
 
-func GetHostInfo(getInfo host.Host) domain.GetApiV1Host200Response {
+func GetHostInfo(getInfo domain.Host) backendDomain.GetApiV1Host200Response {
 
-	hostInfo := domain.GetApiV1Host200Response{
+	hostInfo := backendDomain.GetApiV1Host200Response{
 		Cpu:          GetCpuInfo(getInfo),
 		Mem:          GetMemoryInfo(getInfo),
 		StoragePools: GetStorageInfo(getInfo),
