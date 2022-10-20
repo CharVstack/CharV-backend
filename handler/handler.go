@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/CharVstack/CharV-lib/domain"
+
 	"github.com/CharVstack/CharV-backend/domain/models"
 	backendHost "github.com/CharVstack/CharV-backend/usecase/host"
 	"github.com/CharVstack/CharV-backend/usecase/vms"
@@ -16,15 +18,20 @@ type V1Handler struct{}
 
 func (v V1Handler) GetApiV1Host(c *gin.Context) {
 	storageDirEnv := os.Getenv("STORAGE_DIR")
-	storageDir := host.GetInfoOptions{
+	storageDir := domain.GetInfoOptions{
 		StorageDir: storageDirEnv,
 	}
-	getInfo := host.GetInfo(storageDir)
-	hostInfo := backendHost.GetHostInfo(getInfo)
+	hostInfo, err := host.GetInfo(storageDir)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"err": "not get hostInfo",
+		})
+	}
+	res := backendHost.GetHostInfo(hostInfo)
 	c.JSON(http.StatusOK, gin.H{
-		"cpu":           hostInfo.Cpu,
-		"mem":           hostInfo.Mem,
-		"storage_pools": hostInfo.StoragePools,
+		"cpu":           res.Cpu,
+		"mem":           res.Mem,
+		"storage_pools": res.StoragePools,
 	})
 }
 
@@ -35,13 +42,13 @@ func (v V1Handler) GetApiV1Vms(c *gin.Context) {
 
 // PostApiV1Vms Vm作成時にフロントから情報を受取りステータスを返す
 func (v V1Handler) PostApiV1Vms(c *gin.Context) {
-	var getJsonData models.PostApiV1VmsJSONRequestBody
-	if err := c.ShouldBindJSON(&getJsonData); err != nil {
+	var req models.PostApiV1VmsJSONRequestBody
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	createDiskErr, createVmErr := vms.CreateVm(getJsonData)
+	vmInfo, createDiskErr, createVmErr := vms.CreateVm(req)
 	if createDiskErr != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error: Disk not created": createDiskErr.Error()})
 		return
@@ -51,7 +58,42 @@ func (v V1Handler) PostApiV1Vms(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{})
+	responseData := models.Vm{
+		Devices: struct {
+			Disk []struct {
+				Path string `json:"path"`
+				Type string `json:"type"`
+			} `json:"disk"`
+		}{
+			Disk: []struct {
+				Path string `json:"path"`
+				Type string `json:"type"`
+			}{
+				{
+					Path: vmInfo.Devices.Disk[0].Path,
+					Type: vmInfo.Devices.Disk[0].Type,
+				},
+			},
+		},
+		Memory: vmInfo.Memory,
+		Metadata: struct {
+			ApiVersion string `json:"api_version"`
+			Id         string `json:"id"`
+		}{
+			ApiVersion: vmInfo.Metadata.ApiVersion,
+			Id:         vmInfo.Metadata.Id,
+		},
+		Name: vmInfo.Name,
+		Vcpu: vmInfo.VCpu,
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"name":     responseData.Name,
+		"metadata": responseData.Metadata,
+		"memory":   responseData.Memory,
+		"vcpu":     responseData.Vcpu,
+		"devices":  responseData.Devices,
+	})
 }
 
 func (v V1Handler) GetApiV1VmsVmId(c *gin.Context, vmId string) {
