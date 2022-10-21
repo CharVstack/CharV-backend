@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/CharVstack/CharV-backend/adapters"
+	"github.com/CharVstack/CharV-backend/domain/models"
 	backendHost "github.com/CharVstack/CharV-backend/usecase/host"
 	"github.com/CharVstack/CharV-backend/usecase/vms"
 	"github.com/CharVstack/CharV-lib/pkg/host"
@@ -35,7 +35,7 @@ func (v V1Handler) GetApiV1Vms(c *gin.Context) {
 
 // PostApiV1Vms Vm作成時にフロントから情報を受取りステータスを返す
 func (v V1Handler) PostApiV1Vms(c *gin.Context) {
-	var getJsonData adapters.PostApiV1VmsJSONRequestBody
+	var getJsonData models.PostApiV1VmsJSONRequestBody
 	if err := c.ShouldBindJSON(&getJsonData); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
