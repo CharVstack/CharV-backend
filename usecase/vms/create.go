@@ -1,14 +1,14 @@
 package vms
 
 import (
-	"github.com/CharVstack/CharV-backend/domain/models"
-	"github.com/CharVstack/CharV-lib/domain"
+	backendModels "github.com/CharVstack/CharV-backend/domain/models"
+	libModels "github.com/CharVstack/CharV-lib/domain/models"
 	"github.com/CharVstack/CharV-lib/pkg/qemu"
 )
 
 // CreateVm diskとVmをcharV-libの関数から作成する
-func CreateVm(vmInfo models.PostApiV1VmsJSONRequestBody) (domain.Vm, error, error) {
-	getVmInfo := domain.InstallOpts{
+func CreateVm(vmInfo backendModels.PostApiV1VmsJSONRequestBody) (libModels.Vm, error, error) {
+	getVmInfo := libModels.InstallOpts{
 		Name:   vmInfo.Name,
 		Memory: vmInfo.Memory,
 		VCpu:   vmInfo.Vcpu,

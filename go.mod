@@ -3,7 +3,7 @@ module github.com/CharVstack/CharV-backend
 go 1.18
 
 require (
-	github.com/CharVstack/CharV-lib v0.0.0-20221020060038-1ecbd8cfbd78
+	github.com/CharVstack/CharV-lib v0.0.0-20221025014445-77b198ea996f
 	github.com/deepmap/oapi-codegen v1.11.0
 	github.com/getkin/kin-openapi v0.106.0
 	github.com/gin-contrib/cors v1.4.0
