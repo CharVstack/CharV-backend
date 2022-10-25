@@ -1,5 +1,3 @@
-github.com/CharVstack/CharV-lib v0.0.0-20221020060038-1ecbd8cfbd78 h1:4M5ZLK6OyeIR5dlaAAxVwjEF8NsyhcaJ+tTCcGiXXnE=
-github.com/CharVstack/CharV-lib v0.0.0-20221020060038-1ecbd8cfbd78/go.mod h1:zEKZ+tnWhpB8w8o58QSkXFgogjUD+e3eEprjxLUENmo=
 github.com/CharVstack/CharV-lib v0.0.0-20221025014445-77b198ea996f h1:8fSTpO1r/Hdpxpc2VvdPUbN13lbiNjkI71ZyBvFUhI8=
 github.com/CharVstack/CharV-lib v0.0.0-20221025014445-77b198ea996f/go.mod h1:WH772xz9gva0u2IweoBKQTXAxoUvk1w0QLsxn5EKvOw=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
