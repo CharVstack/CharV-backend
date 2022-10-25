@@ -1,14 +1,14 @@
 package host
 
 import (
-	"github.com/CharVstack/CharV-backend/domain/models"
-	"github.com/CharVstack/CharV-lib/domain"
+	backendModels "github.com/CharVstack/CharV-backend/domain/models"
+	libModels "github.com/CharVstack/CharV-lib/domain/models"
 )
 
-func GetCpuInfo(getInfo domain.Host) models.Cpu {
-	cpuInfo := models.Cpu{
+func GetCpuInfo(getInfo libModels.Host) backendModels.Cpu {
+	cpuInfo := backendModels.Cpu{
 		Counts:  getInfo.Cpu.Counts,
-		Percent: models.TypeFloat64(getInfo.Cpu.Percent),
+		Percent: backendModels.TypeFloat64(getInfo.Cpu.Percent),
 	}
 
 	return cpuInfo

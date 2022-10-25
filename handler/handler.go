@@ -4,12 +4,11 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/CharVstack/CharV-lib/domain"
-
-	"github.com/CharVstack/CharV-backend/domain/models"
+	backendModels "github.com/CharVstack/CharV-backend/domain/models"
 	backendHost "github.com/CharVstack/CharV-backend/usecase/host"
 	"github.com/CharVstack/CharV-backend/usecase/vms"
-	"github.com/CharVstack/CharV-lib/pkg/host"
+	libModels "github.com/CharVstack/CharV-lib/domain/models"
+	libHost "github.com/CharVstack/CharV-lib/pkg/host"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,10 +17,10 @@ type V1Handler struct{}
 
 func (v V1Handler) GetApiV1Host(c *gin.Context) {
 	storageDirEnv := os.Getenv("STORAGE_DIR")
-	storageDir := domain.GetInfoOptions{
+	storageDir := libModels.GetInfoOptions{
 		StorageDir: storageDirEnv,
 	}
-	hostInfo, err := host.GetInfo(storageDir)
+	hostInfo, err := libHost.GetInfo(storageDir)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"err": "not get hostInfo",
@@ -42,7 +41,7 @@ func (v V1Handler) GetApiV1Vms(c *gin.Context) {
 
 // PostApiV1Vms Vm作成時にフロントから情報を受取りステータスを返す
 func (v V1Handler) PostApiV1Vms(c *gin.Context) {
-	var req models.PostApiV1VmsJSONRequestBody
+	var req backendModels.PostApiV1VmsJSONRequestBody
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -58,7 +57,7 @@ func (v V1Handler) PostApiV1Vms(c *gin.Context) {
 		return
 	}
 
-	responseData := models.Vm{
+	responseData := backendModels.Vm{
 		Devices: struct {
 			Disk []struct {
 				Path string `json:"path"`
@@ -84,7 +83,7 @@ func (v V1Handler) PostApiV1Vms(c *gin.Context) {
 			Id:         vmInfo.Metadata.Id,
 		},
 		Name: vmInfo.Name,
-		Vcpu: vmInfo.VCpu,
+		Vcpu: vmInfo.Vcpu,
 	}
 
 	c.JSON(http.StatusOK, gin.H{
