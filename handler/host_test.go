@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	"github.com/CharVstack/CharV-backend/domain"
-	"github.com/CharVstack/CharV-backend/domain/models"
 	backendHost "github.com/CharVstack/CharV-backend/usecase/host"
+	"github.com/CharVstack/CharV-lib/domain/models"
 	"github.com/CharVstack/CharV-lib/pkg/host"
 	"github.com/joho/godotenv"
 )
@@ -21,7 +21,7 @@ func init() {
 	}
 }
 
-func TransStruct(getInfo host.Host) (models.Cpu, models.Memory, []models.StoragePool) {
+func TransStruct(getInfo models.Host) (models.Cpu, models.Memory, []models.StoragePool) {
 	cpuStruct := backendHost.GetCpuInfo(getInfo)
 	memoryStruct := backendHost.GetMemoryInfo(getInfo)
 	storageStruct := backendHost.GetStorageInfo(getInfo)
@@ -31,13 +31,16 @@ func TransStruct(getInfo host.Host) (models.Cpu, models.Memory, []models.Storage
 
 func TestGetHostInfo(t *testing.T) {
 	storageDirEnv := os.Getenv("STORAGE_DIR")
-	storageDir := host.GetInfoOptions{
+	storageDir := models.GetInfoOptions{
 		StorageDir: storageDirEnv,
 	}
-	var getHostInfo = host.GetInfo(storageDir)
+	getHostInfo, err := host.GetInfo(storageDir)
+	if err != nil {
+		t.Fatal(err)
+	}
 	var cpuInfo, memoryInfo, storageInfo = TransStruct(getHostInfo)
 	type args struct {
-		getInfo host.Host
+		getInfo models.Host
 	}
 	tests := []struct {
 		name string
@@ -47,9 +50,9 @@ func TestGetHostInfo(t *testing.T) {
 		{
 			name: "テストデータ",
 			args: args{
-				getInfo: host.Host{
+				getInfo: models.Host{
 					Cpu:          getHostInfo.Cpu,
-					Memory:       getHostInfo.Memory,
+					Mem:          getHostInfo.Mem,
 					StoragePools: getHostInfo.StoragePools,
 				},
 			},
