@@ -16,8 +16,8 @@ func CreateVm(vmInfo backendModels.PostApiV1VmsJSONRequestBody) (libModels.Vm, e
 		Disk:   vmInfo.Name + "Disk",
 	}
 
-	createDisk := qemu.CreateDisk(getVmInfo.Disk)
-	getJSONData, createVm := qemu.Install(getVmInfo)
+	name, createDisk := qemu.CreateDisk(getVmInfo.Disk)
+	getJSONData, createVm := qemu.Install(getVmInfo, name)
 
 	return getJSONData, createDisk, createVm
 }

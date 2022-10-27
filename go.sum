@@ -2,6 +2,8 @@ github.com/CharVstack/CharV-lib v0.0.0-20221025014445-77b198ea996f h1:8fSTpO1r/H
 github.com/CharVstack/CharV-lib v0.0.0-20221025014445-77b198ea996f/go.mod h1:WH772xz9gva0u2IweoBKQTXAxoUvk1w0QLsxn5EKvOw=
 github.com/CharVstack/CharV-lib v0.0.0-20221027052422-e92ce10fbfce h1:cqmmmCvG4fsN0gHsXyeeQCXcznfYL4fOzbqFIIZPQPQ=
 github.com/CharVstack/CharV-lib v0.0.0-20221027052422-e92ce10fbfce/go.mod h1:1kgX5b+d5FUFkMvPPW3SCFkZ5KmwbWaQ0ZxIakmQzC8=
+github.com/CharVstack/CharV-lib v0.0.0-20221027053616-168b53944b12 h1:6v/8oIh/pUEMT3ypykbWiz/Q3JRNkitc9xxQ6uJ5tHo=
+github.com/CharVstack/CharV-lib v0.0.0-20221027053616-168b53944b12/go.mod h1:1kgX5b+d5FUFkMvPPW3SCFkZ5KmwbWaQ0ZxIakmQzC8=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/cyberdelia/templates v0.0.0-20141128023046-ca7fffd4298c/go.mod h1:GyV+0YP4qX0UQ7r2MoYZ+AvYDp12OF5yg4q8rGnyNh4=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
