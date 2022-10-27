@@ -7,10 +7,10 @@ import (
 
 func GetMemoryInfo(getInfo libModels.Host) backendModels.Memory {
 	memoryInfo := backendModels.Memory{
-		Total:       backendModels.TypeUint64(getInfo.Memory.Total),
-		Used:        backendModels.TypeUint64(getInfo.Memory.Used),
-		Free:        backendModels.TypeUint64(getInfo.Memory.Free),
-		UsedPercent: backendModels.TypeFloat64(getInfo.Memory.UsedPercent),
+		Total:       backendModels.TypeUint64(getInfo.Mem.Total),
+		Used:        backendModels.TypeUint64(getInfo.Mem.Used),
+		Free:        backendModels.TypeUint64(getInfo.Mem.Free),
+		UsedPercent: backendModels.TypeFloat64(getInfo.Mem.UsedPercent),
 	}
 
 	return memoryInfo

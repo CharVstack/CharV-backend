@@ -55,7 +55,7 @@ func TestGetHostInfo(t *testing.T) {
 			args: args{
 				getInfo: libModels.Host{
 					Cpu:          getHostInfo.Cpu,
-					Memory:       getHostInfo.Memory,
+					Mem:          getHostInfo.Mem,
 					StoragePools: getHostInfo.StoragePools,
 				},
 			},

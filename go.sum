@@ -1,5 +1,7 @@
 github.com/CharVstack/CharV-lib v0.0.0-20221025014445-77b198ea996f h1:8fSTpO1r/Hdpxpc2VvdPUbN13lbiNjkI71ZyBvFUhI8=
 github.com/CharVstack/CharV-lib v0.0.0-20221025014445-77b198ea996f/go.mod h1:WH772xz9gva0u2IweoBKQTXAxoUvk1w0QLsxn5EKvOw=
+github.com/CharVstack/CharV-lib v0.0.0-20221027052422-e92ce10fbfce h1:cqmmmCvG4fsN0gHsXyeeQCXcznfYL4fOzbqFIIZPQPQ=
+github.com/CharVstack/CharV-lib v0.0.0-20221027052422-e92ce10fbfce/go.mod h1:1kgX5b+d5FUFkMvPPW3SCFkZ5KmwbWaQ0ZxIakmQzC8=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/cyberdelia/templates v0.0.0-20141128023046-ca7fffd4298c/go.mod h1:GyV+0YP4qX0UQ7r2MoYZ+AvYDp12OF5yg4q8rGnyNh4=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
@@ -151,6 +153,7 @@ github.com/tklauser/numcpus v0.4.0/go.mod h1:1+UI3pD8NW14VMwdgJNJ1ESk2UnwhAnz5hM
 github.com/tklauser/numcpus v0.5.0 h1:ooe7gN0fg6myJ0EKoTAf5hebTZrH52px3New/D9iJ+A=
 github.com/tklauser/numcpus v0.5.0/go.mod h1:OGzpTxpcIMNGYQdit2BYL1pvk/dSOaJWjKoflh+RQjo=
 github.com/ugorji/go v1.1.7/go.mod h1:kZn38zHttfInRq0xu/PH0az30d+z6vm202qpg1oXVMw=
+github.com/ugorji/go v1.2.7 h1:qYhyWUUd6WbiM+C6JZAUkIJt/1WrjzNHY9+KCIjVqTo=
 github.com/ugorji/go v1.2.7/go.mod h1:nF9osbDWLy6bDVv/Rtoh6QgnvNDpmCalQV5urGCCS6M=
 github.com/ugorji/go/codec v1.1.7/go.mod h1:Ax+UKWsSmolVDwsd+7N3ZtXu+yMGCf907BLYF3GoBXY=
 github.com/ugorji/go/codec v1.2.7 h1:YPXUKf7fYbp/y8xloBqZOw2qaVggbfwMlI8WM3wZUJ0=
