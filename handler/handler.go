@@ -57,41 +57,12 @@ func (v V1Handler) PostApiV1Vms(c *gin.Context) {
 		return
 	}
 
-	responseData := backendModels.Vm{
-		Devices: struct {
-			Disk []struct {
-				Path string `json:"path"`
-				Type string `json:"type"`
-			} `json:"disk"`
-		}{
-			Disk: []struct {
-				Path string `json:"path"`
-				Type string `json:"type"`
-			}{
-				{
-					Path: vmInfo.Devices.Disk[0].Path,
-					Type: vmInfo.Devices.Disk[0].Type,
-				},
-			},
-		},
-		Memory: vmInfo.Memory,
-		Metadata: struct {
-			ApiVersion string `json:"api_version"`
-			Id         string `json:"id"`
-		}{
-			ApiVersion: vmInfo.Metadata.ApiVersion,
-			Id:         vmInfo.Metadata.Id,
-		},
-		Name: vmInfo.Name,
-		Vcpu: vmInfo.Vcpu,
-	}
-
 	c.JSON(http.StatusOK, gin.H{
-		"name":     responseData.Name,
-		"metadata": responseData.Metadata,
-		"memory":   responseData.Memory,
-		"vcpu":     responseData.Vcpu,
-		"devices":  responseData.Devices,
+		"name":     vmInfo.Name,
+		"metadata": vmInfo.Metadata,
+		"memory":   vmInfo.Memory,
+		"vcpu":     vmInfo.Vcpu,
+		"devices":  vmInfo.Devices,
 	})
 }
 
