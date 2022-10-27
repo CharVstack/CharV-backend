@@ -13,7 +13,7 @@ func CreateVm(vmInfo backendModels.PostApiV1VmsJSONRequestBody) (libModels.Vm, e
 		Memory: vmInfo.Memory,
 		VCpu:   vmInfo.Vcpu,
 		Image:  "ubuntu-20.04.5-live-server-amd64.iso",
-		Disk:   vmInfo.Name + "disk",
+		Disk:   vmInfo.Name + "Disk",
 	}
 
 	createDisk := qemu.CreateDisk(getVmInfo.Disk)
