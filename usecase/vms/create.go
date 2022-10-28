@@ -20,7 +20,7 @@ func CreateVm(vmInfo models.PostApiV1VmsJSONRequestBody) (models.Vm, error) {
 		return models.Vm{}, err
 	}
 
-	var createVm models.Vm{}
+	var createVm models.Vm
 	createVm, err = qemu.Install(toGetInfo, name)
 	if err != nil {
 		return models.Vm{}, err
