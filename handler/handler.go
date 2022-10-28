@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/CharVstack/CharV-backend/domain/models"
 	backendHost "github.com/CharVstack/CharV-backend/usecase/host"
 	"github.com/CharVstack/CharV-backend/usecase/vms"
+	"github.com/CharVstack/CharV-lib/domain/models"
 	"github.com/CharVstack/CharV-lib/pkg/host"
 	"github.com/gin-gonic/gin"
 )
@@ -16,16 +16,17 @@ type V1Handler struct{}
 
 func (v V1Handler) GetApiV1Host(c *gin.Context) {
 	storageDirEnv := os.Getenv("STORAGE_DIR")
-	storageDir := host.GetInfoOptions{
+	storageDir := models.GetInfoOptions{
 		StorageDir: storageDirEnv,
 	}
-	getInfo := host.GetInfo(storageDir)
+	getInfo, err := host.GetInfo(storageDir)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+	}
 	hostInfo := backendHost.GetHostInfo(getInfo)
-	c.JSON(http.StatusOK, gin.H{
-		"cpu":           hostInfo.Cpu,
-		"mem":           hostInfo.Mem,
-		"storage_pools": hostInfo.StoragePools,
-	})
+	c.JSON(http.StatusOK, hostInfo)
 }
 
 func (v V1Handler) GetApiV1Vms(c *gin.Context) {
@@ -37,21 +38,17 @@ func (v V1Handler) GetApiV1Vms(c *gin.Context) {
 func (v V1Handler) PostApiV1Vms(c *gin.Context) {
 	var getJsonData models.PostApiV1VmsJSONRequestBody
 	if err := c.ShouldBindJSON(&getJsonData); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
-	createDiskErr, createVmErr := vms.CreateVm(getJsonData)
-	if createDiskErr != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error: Disk not created": createDiskErr.Error()})
-		return
-	}
-	if createVmErr != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error: Vm not created": createVmErr.Error()})
+	vm, err := vms.CreateVm(getJsonData)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, vm)
 }
 
 func (v V1Handler) GetApiV1VmsVmId(c *gin.Context, vmId string) {

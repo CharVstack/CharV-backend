@@ -2,10 +2,10 @@ package host
 
 import (
 	"github.com/CharVstack/CharV-backend/domain"
-	"github.com/CharVstack/CharV-lib/pkg/host"
+	"github.com/CharVstack/CharV-lib/domain/models"
 )
 
-func GetHostInfo(getInfo host.Host) domain.GetApiV1Host200Response {
+func GetHostInfo(getInfo models.Host) domain.GetApiV1Host200Response {
 
 	hostInfo := domain.GetApiV1Host200Response{
 		Cpu:          GetCpuInfo(getInfo),

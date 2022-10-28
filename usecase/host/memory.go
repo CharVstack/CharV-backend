@@ -1,16 +1,15 @@
 package host
 
 import (
-	"github.com/CharVstack/CharV-backend/domain/models"
-	"github.com/CharVstack/CharV-lib/pkg/host"
+	"github.com/CharVstack/CharV-lib/domain/models"
 )
 
-func GetMemoryInfo(getInfo host.Host) models.Memory {
+func GetMemoryInfo(getInfo models.Host) models.Memory {
 	memoryInfo := models.Memory{
-		Total:       models.TypeUint64(getInfo.Memory.Total),
-		Used:        models.TypeUint64(getInfo.Memory.Used),
-		Free:        models.TypeUint64(getInfo.Memory.Free),
-		UsedPercent: models.TypeFloat64(getInfo.Memory.UsedPercent),
+		Total:       getInfo.Mem.Total,
+		Used:        getInfo.Mem.Used,
+		Free:        getInfo.Mem.Free,
+		UsedPercent: getInfo.Mem.UsedPercent,
 	}
 
 	return memoryInfo
