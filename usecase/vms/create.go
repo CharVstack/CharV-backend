@@ -1,14 +1,13 @@
 package vms
 
 import (
-	backendModels "github.com/CharVstack/CharV-backend/domain/models"
-	libModels "github.com/CharVstack/CharV-lib/domain/models"
+	"github.com/CharVstack/CharV-lib/domain/models"
 	"github.com/CharVstack/CharV-lib/pkg/qemu"
 )
 
 // CreateVm diskとVmをcharV-libの関数から作成する
-func CreateVm(vmInfo backendModels.PostApiV1VmsJSONRequestBody) (libModels.Vm, error, error) {
-	getVmInfo := libModels.InstallOpts{
+func CreateVm(vmInfo models.PostApiV1VmsJSONRequestBody) (models.Vm, error) {
+	toGetInfo := models.InstallOpts{
 		Name:   vmInfo.Name,
 		Memory: vmInfo.Memory,
 		VCpu:   vmInfo.Vcpu,
@@ -16,8 +15,16 @@ func CreateVm(vmInfo backendModels.PostApiV1VmsJSONRequestBody) (libModels.Vm, e
 		Disk:   vmInfo.Name + "Disk",
 	}
 
-	name, createDisk := qemu.CreateDisk(getVmInfo.Disk)
-	getJSONData, createVm := qemu.Install(getVmInfo, name)
+	name, err := qemu.CreateDisk(toGetInfo.Disk)
+	if err != nil {
+		return models.Vm{}, err
+	}
 
-	return getJSONData, createDisk, createVm
+	var createVm models.Vm{}
+	createVm, err = qemu.Install(toGetInfo, name)
+	if err != nil {
+		return models.Vm{}, err
+	}
+
+	return createVm, err
 }
