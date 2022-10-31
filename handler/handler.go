@@ -45,7 +45,7 @@ func (v V1Handler) PostApiV1Vms(c *gin.Context) {
 	}
 
 	err := qemu.ExistsSufficientMemory(uint64(requestBody.Memory))
-	if err := c.ShouldBindJSON(&requestBody); err != nil {
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
