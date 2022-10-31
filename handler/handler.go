@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/CharVstack/CharV-lib/pkg/qemu"
+
 	backendHost "github.com/CharVstack/CharV-backend/usecase/host"
 	"github.com/CharVstack/CharV-backend/usecase/vms"
 	"github.com/CharVstack/CharV-lib/domain/models"
@@ -36,13 +38,20 @@ func (v V1Handler) GetApiV1Vms(c *gin.Context) {
 
 // PostApiV1Vms Vm作成時にフロントから情報を受取りステータスを返す
 func (v V1Handler) PostApiV1Vms(c *gin.Context) {
-	var getJsonData models.PostApiV1VmsJSONRequestBody
-	if err := c.ShouldBindJSON(&getJsonData); err != nil {
+	var requestBody models.PostApiV1VmsJSONRequestBody
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
-	vm, err := vms.CreateVm(getJsonData)
+	err := qemu.ExistsSufficientMemory(uint64(requestBody.Memory))
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	var vm models.Vm
+	vm, err = vms.CreateVm(requestBody)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
