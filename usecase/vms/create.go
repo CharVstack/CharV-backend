@@ -12,14 +12,16 @@ func CreateVm(vmInfo models.PostApiV1VmsJSONRequestBody) (models.Vm, error) {
 		Memory: vmInfo.Memory,
 		VCpu:   vmInfo.Vcpu,
 		Image:  "ubuntu-20.04.5-live-server-amd64.iso",
-		Disk:   vmInfo.Name + "disk",
+		Disk:   vmInfo.Name + "Disk",
 	}
 
-	if err := qemu.CreateDisk(toGetInfo.Disk); err != nil {
+	name, err := qemu.CreateDisk(toGetInfo.Disk)
+	if err != nil {
 		return models.Vm{}, err
 	}
 
-	createVm, err := qemu.Install(toGetInfo)
+	var createVm models.Vm
+	createVm, err = qemu.Install(toGetInfo, name)
 	if err != nil {
 		return models.Vm{}, err
 	}

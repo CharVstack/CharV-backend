@@ -9,7 +9,7 @@ import (
 	"github.com/CharVstack/CharV-backend/domain"
 	backendHost "github.com/CharVstack/CharV-backend/usecase/host"
 	"github.com/CharVstack/CharV-lib/domain/models"
-	"github.com/CharVstack/CharV-lib/pkg/host"
+	libHost "github.com/CharVstack/CharV-lib/pkg/host"
 	"github.com/joho/godotenv"
 )
 
@@ -34,10 +34,11 @@ func TestGetHostInfo(t *testing.T) {
 	storageDir := models.GetInfoOptions{
 		StorageDir: storageDirEnv,
 	}
-	getHostInfo, err := host.GetInfo(storageDir)
+	var getHostInfo, err = libHost.GetInfo(storageDir)
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	var cpuInfo, memoryInfo, storageInfo = TransStruct(getHostInfo)
 	type args struct {
 		getInfo models.Host
