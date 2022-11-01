@@ -32,8 +32,14 @@ func (v V1Handler) GetApiV1Host(c *gin.Context) {
 }
 
 func (v V1Handler) GetApiV1Vms(c *gin.Context) {
-	//TODO implement me
-	panic("implement me")
+	vmsInfo, err := vms.Info()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"vms": vmsInfo,
+	})
 }
 
 // PostApiV1Vms Vm作成時にフロントから情報を受取りステータスを返す
