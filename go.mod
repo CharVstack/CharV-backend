@@ -3,15 +3,16 @@ module github.com/CharVstack/CharV-backend
 go 1.18
 
 require (
-	github.com/CharVstack/CharV-lib v0.0.0-20221031012440-183775deceac
-	github.com/deepmap/oapi-codegen v1.11.0
-	github.com/getkin/kin-openapi v0.106.0
+	github.com/CharVstack/CharV-lib v0.0.0-20221101030246-67d9f850aeac
+	github.com/deepmap/oapi-codegen v1.12.2
+	github.com/getkin/kin-openapi v0.107.0
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.8.1
 	github.com/joho/godotenv v1.4.0
 )
 
 require (
+	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect

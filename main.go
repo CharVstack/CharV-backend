@@ -10,7 +10,9 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"io/fs"
 	"log"
 	"os"
 	"time"
@@ -28,6 +30,12 @@ func init() {
 	if err != nil {
 		fmt.Printf(err.Error())
 		os.Exit(2)
+	}
+
+	storageDirEnv := os.Getenv("STORAGE_DIR")
+	_, err = os.ReadDir(storageDirEnv)
+	if err != nil && errors.Is(err, fs.ErrNotExist) {
+		log.Fatal(err)
 	}
 }
 
