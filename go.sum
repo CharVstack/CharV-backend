@@ -1,5 +1,3 @@
-github.com/CharVstack/CharV-lib v0.0.0-20221031032951-d25d3251d0cc h1:1x9KrDDvGR4bUhHq7W29KSy+o1Do30NgS4R++RC6IPQ=
-github.com/CharVstack/CharV-lib v0.0.0-20221031032951-d25d3251d0cc/go.mod h1:HPIPaopWJVKhi+oWSI86Eto+YzM3mX8xw+JscHU37Js=
 github.com/CharVstack/CharV-lib v0.0.0-20221101030246-67d9f850aeac h1:Tc6aBcfxhealaYts07kFiVtCm5Wi8jFY118t45KDRtI=
 github.com/CharVstack/CharV-lib v0.0.0-20221101030246-67d9f850aeac/go.mod h1:HPIPaopWJVKhi+oWSI86Eto+YzM3mX8xw+JscHU37Js=
 github.com/RaveNoX/go-jsoncommentstrip v1.0.0/go.mod h1:78ihd09MekBnJnxpICcwzCMzGrKSKYe4AqU6PDYYpjk=
