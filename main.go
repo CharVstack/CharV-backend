@@ -60,7 +60,7 @@ func main() {
 
 	router := adapters.RegisterHandlers(r, getHandler)
 
-	if err := router.Run(":8080"); err != nil {
+	if err = router.Run(":8080"); err != nil {
 		log.Fatal(err)
 	}
 }
