@@ -1,7 +1,7 @@
 package host
 
 import (
-	"github.com/CharVstack/CharV-lib/domain/models"
+	"github.com/CharVstack/CharV-backend/domain/models"
 )
 
 func GetMemoryInfo(getInfo models.Host) models.Memory {
