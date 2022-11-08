@@ -34,6 +34,21 @@ const (
 	VmStatusUnknown VmStatus = "unknown"
 )
 
+// Defines values for VmPowerInfoState.
+const (
+	POWEREDOFF VmPowerInfoState = "POWERED_OFF"
+	POWEREDON  VmPowerInfoState = "POWERED_ON"
+	SUSPENDED  VmPowerInfoState = "SUSPENDED"
+)
+
+// Defines values for PostApiV1VmsVmIdPowerActionParamsAction.
+const (
+	Reset   PostApiV1VmsVmIdPowerActionParamsAction = "reset"
+	Start   PostApiV1VmsVmIdPowerActionParamsAction = "start"
+	Stop    PostApiV1VmsVmIdPowerActionParamsAction = "stop"
+	Suspend PostApiV1VmsVmIdPowerActionParamsAction = "suspend"
+)
+
 // Cpu ホストのCPU情報
 type Cpu struct {
 	Counts  int     `json:"counts"`
@@ -107,40 +122,52 @@ type Vm struct {
 // VmStatus defines model for Vm.Status.
 type VmStatus string
 
+// VmPowerInfo defines model for VmPowerInfo.
+type VmPowerInfo struct {
+	CleanPowerOff bool             `json:"clean_power_off"`
+	State         VmPowerInfoState `json:"state"`
+}
+
+// VmPowerInfoState defines model for VmPowerInfo.State.
+type VmPowerInfoState string
+
 // GetAllVMsList200Response defines model for GetAllVMsList200Response.
 type GetAllVMsList200Response struct {
+	Data    []Vm    `json:"data"`
 	Message *string `json:"message,omitempty"`
-	Vms     []Vm    `json:"vms"`
 }
 
 // GetHost200Response defines model for GetHost200Response.
 type GetHost200Response struct {
-	Host    Host    `json:"host"`
+	Data    Host    `json:"data"`
 	Message *string `json:"message,omitempty"`
 }
 
 // GetVMByVMId200Response defines model for GetVMByVMId200Response.
 type GetVMByVMId200Response struct {
+	// Data 仮想マシンを表すモデル
+	Data    Vm      `json:"data"`
 	Message *string `json:"message,omitempty"`
+}
 
-	// Vm 仮想マシンを表すモデル
-	Vm Vm `json:"vm"`
+// GetVMPowerByVMId200Response defines model for GetVMPowerByVMId200Response.
+type GetVMPowerByVMId200Response struct {
+	Data    VmPowerInfo `json:"data"`
+	Message *string     `json:"message,omitempty"`
 }
 
 // PatchUpdateVMByVMId200Response defines model for PatchUpdateVMByVMId200Response.
 type PatchUpdateVMByVMId200Response struct {
+	// Data 仮想マシンを表すモデル
+	Data    Vm      `json:"data"`
 	Message *string `json:"message,omitempty"`
-
-	// Vm 仮想マシンを表すモデル
-	Vm Vm `json:"vm"`
 }
 
 // PostCreateNewVM200Response defines model for PostCreateNewVM200Response.
 type PostCreateNewVM200Response struct {
+	// Data 仮想マシンを表すモデル
+	Data    Vm      `json:"data"`
 	Message *string `json:"message,omitempty"`
-
-	// Vm 仮想マシンを表すモデル
-	Vm Vm `json:"vm"`
 }
 
 // PostApiV1VmsJSONBody defines parameters for PostApiV1Vms.
@@ -157,8 +184,19 @@ type PatchApiV1VmsVmIdJSONBody struct {
 	Vcpu   *int    `json:"vcpu,omitempty"`
 }
 
+// PostApiV1VmsVmIdPowerActionParams defines parameters for PostApiV1VmsVmIdPowerAction.
+type PostApiV1VmsVmIdPowerActionParams struct {
+	Action *PostApiV1VmsVmIdPowerActionParamsAction `form:"action,omitempty" json:"action,omitempty"`
+}
+
+// PostApiV1VmsVmIdPowerActionParamsAction defines parameters for PostApiV1VmsVmIdPowerAction.
+type PostApiV1VmsVmIdPowerActionParamsAction string
+
 // PostApiV1VmsJSONRequestBody defines body for PostApiV1Vms for application/json ContentType.
 type PostApiV1VmsJSONRequestBody PostApiV1VmsJSONBody
 
 // PatchApiV1VmsVmIdJSONRequestBody defines body for PatchApiV1VmsVmId for application/json ContentType.
 type PatchApiV1VmsVmIdJSONRequestBody PatchApiV1VmsVmIdJSONBody
+
+// GetApiV1VmsVmIdPowerJSONRequestBody defines body for GetApiV1VmsVmIdPower for application/json ContentType.
+type GetApiV1VmsVmIdPowerJSONRequestBody = VmPowerInfo
