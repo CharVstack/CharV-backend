@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/CharVstack/CharV-backend/internal/util"
+	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
 
 	"github.com/CharVstack/CharV-backend/domain/models"
 	"github.com/CharVstack/CharV-backend/internal/qemu"
@@ -27,7 +28,7 @@ func (v V1Handler) GetApiV1Host(c *gin.Context) {
 		})
 	}
 	c.JSON(http.StatusOK, models.GetHost200Response{
-		Host: hostInfo,
+		Data: hostInfo,
 	})
 }
 
@@ -38,7 +39,7 @@ func (v V1Handler) GetApiV1Vms(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, models.GetAllVMsList200Response{
-		Vms: allVmsInfo,
+		Data: allVmsInfo,
 	})
 }
 
@@ -64,16 +65,26 @@ func (v V1Handler) PostApiV1Vms(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, models.PostCreateNewVM200Response{
-		Vm: vm,
+		Data: vm,
 	})
 }
 
-func (v V1Handler) GetApiV1VmsVmId(c *gin.Context, vmId string) {
+func (v V1Handler) GetApiV1VmsVmId(c *gin.Context, vmId openapi_types.UUID) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (v V1Handler) PatchApiV1VmsVmId(c *gin.Context, vmId string) {
+func (v V1Handler) PatchApiV1VmsVmId(c *gin.Context, vmId openapi_types.UUID) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (v V1Handler) GetApiV1VmsVmIdPower(c *gin.Context, vmId openapi_types.UUID) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (v V1Handler) PostApiV1VmsVmIdPowerAction(c *gin.Context, vmId openapi_types.UUID, params models.PostApiV1VmsVmIdPowerActionParams) {
 	//TODO implement me
 	panic("implement me")
 }
