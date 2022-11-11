@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/CharVstack/CharV-backend/domain/models"
+	"github.com/google/uuid"
 )
 
 func TestParse(t *testing.T) {
@@ -20,20 +21,24 @@ func TestParse(t *testing.T) {
 				},
 			},
 		},
+		Metadata: models.Metadata{
+			Id:         uuid.Must(uuid.Parse("0bfb8def-86ed-4b9d-8826-66a6ab1c1491")),
+			ApiVersion: "0.0.1",
+		},
+		Status: "active",
 	}
 	machine, err := parse("../../test/resources/machines/ubuntu.json")
 	if err != nil {
 		t.Fatal(err)
 	}
 	if !reflect.DeepEqual(testVm, machine) {
-		t.Fail()
+		t.Fatalf("expected: %#v\nactually: %#v", testVm, machine)
 	}
 }
 
-func TestConvertToStruct(t *testing.T) {
-	vms, err := ConvertToStruct("../../test/resources/machines/")
+func TestGetAllVms(t *testing.T) {
+	_, err := getAllVms("../../test/resources/machines/")
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Logf("%#v", vms)
 }

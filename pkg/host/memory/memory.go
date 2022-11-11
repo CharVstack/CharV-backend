@@ -1,10 +1,10 @@
-package host
+package memory
 
 import (
 	"github.com/CharVstack/CharV-backend/domain/models"
 )
 
-func GetMemoryInfo(getInfo models.Host) models.Memory {
+func GetInfo(getInfo models.Host) models.Memory {
 	memoryInfo := models.Memory{
 		Total:       getInfo.Mem.Total,
 		Used:        getInfo.Mem.Used,

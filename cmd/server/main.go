@@ -13,13 +13,17 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
-	"log"
 	"os"
 	"time"
 
+	"github.com/skerkour/rz"
+	"github.com/skerkour/rz/log"
+
+	charvbackend "github.com/CharVstack/CharV-backend"
 	"github.com/CharVstack/CharV-backend/adapters"
 	"github.com/CharVstack/CharV-backend/handler"
-	middleware "github.com/deepmap/oapi-codegen/pkg/gin-middleware"
+	"github.com/CharVstack/CharV-backend/middleware"
+	oapiMiddleware "github.com/deepmap/oapi-codegen/pkg/gin-middleware"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -28,25 +32,33 @@ import (
 func init() {
 	err := godotenv.Load("./.env")
 	if err != nil {
-		fmt.Printf(err.Error())
-		os.Exit(2)
+		log.Fatal(err.Error())
 	}
 
 	storageDirEnv := os.Getenv("STORAGE_DIR")
 	_, err = os.ReadDir(storageDirEnv)
 	if err != nil && errors.Is(err, fs.ErrNotExist) {
-		log.Fatal(err)
+		log.Fatal(err.Error())
 	}
 }
 
 func main() {
-	r := gin.Default()
+	r := gin.New()
+
+	logger := rz.New(rz.Fields(rz.String("version", fmt.Sprintf("v%s-%s", charvbackend.VERSION, charvbackend.REVISION))))
 
 	swagger, err := adapters.GetSwagger()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(err.Error())
 	}
-	r.Use(middleware.OapiRequestValidator(swagger))
+	validatorOpts := oapiMiddleware.Options{
+		ErrorHandler: middleware.ValidationErrorHandler,
+	}
+	r.Use(oapiMiddleware.OapiRequestValidatorWithOptions(swagger, &validatorOpts))
+
+	r.Use(gin.Recovery())
+
+	r.Use(middleware.Logger(logger))
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: []string{
@@ -64,11 +76,14 @@ func main() {
 		MaxAge:           24 * time.Hour,
 	}))
 
-	getHandler := handler.V1Handler{}
+	v1Handler := handler.V1Handler{}
 
-	router := adapters.RegisterHandlers(r, getHandler)
+	ginServerOpts := adapters.GinServerOptions{
+		ErrorHandler: middleware.GenericErrorHandler,
+	}
+	router := adapters.RegisterHandlersWithOptions(r, v1Handler, ginServerOpts)
 
 	if err := router.Run(":8080"); err != nil {
-		log.Fatal(err)
+		log.Fatal(err.Error())
 	}
 }
