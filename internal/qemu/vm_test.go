@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/CharVstack/CharV-backend/domain/models"
-	"github.com/stretchr/testify/assert"
+	"github.com/google/uuid"
 )
 
 func TestParse(t *testing.T) {
@@ -21,33 +21,24 @@ func TestParse(t *testing.T) {
 				},
 			},
 		},
+		Metadata: models.Metadata{
+			Id:         uuid.Must(uuid.Parse("0bfb8def-86ed-4b9d-8826-66a6ab1c1491")),
+			ApiVersion: "0.0.1",
+		},
+		Status: "active",
 	}
 	machine, err := parse("../../test/resources/machines/ubuntu.json")
 	if err != nil {
 		t.Fatal(err)
 	}
 	if !reflect.DeepEqual(testVm, machine) {
-		t.Fail()
+		t.Fatalf("expected: %#v\nactually: %#v", testVm, machine)
 	}
 }
 
 func TestGetAllVms(t *testing.T) {
-	vms, err := getAllVms("../../test/resources/machines/")
+	_, err := getAllVms("../../test/resources/machines/")
 	if err != nil {
 		t.Fatal(err)
-	}
-	t.Logf("%#v", vms)
-}
-
-func TestCheckFileType(t *testing.T) {
-	var err error
-	_, err = CheckFileType("../../test/resources/image/ok.qcow2")
-	if !assert.NoError(t, err) {
-		t.Fatal(err)
-	}
-
-	_, err = CheckFileType("../../test/resources/image/bad.qcow2")
-	if !assert.Error(t, err) {
-		t.Fail()
 	}
 }
