@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
-	"io"
 	"os"
 
 	"github.com/CharVstack/CharV-backend/domain/models"
@@ -13,7 +11,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func createInfoJSON(opts InstallOpts, filePath string) (models.Vm, error) {
+func getVmInfo(opts InstallOpts, filePath string) (vmInfo models.Vm, err error) {
 	uuidObj, err := uuid.NewRandom()
 	if err != nil {
 		return models.Vm{}, err
@@ -22,11 +20,11 @@ func createInfoJSON(opts InstallOpts, filePath string) (models.Vm, error) {
 	var diskType models.DiskType
 	diskType, err = CheckFileType(filePath)
 	if err != nil {
-		fmt.Println(err)
+		return models.Vm{}, err
 	}
 	typeMap := map[models.DiskType]string{models.DiskTypeQcow2: ".qcow2"}
 
-	vmInfo := models.Vm{
+	vmInfo = models.Vm{
 		Devices: models.Devices{
 			Disk: []models.Disk{
 				{
@@ -45,8 +43,7 @@ func createInfoJSON(opts InstallOpts, filePath string) (models.Vm, error) {
 		Vcpu: opts.VCpu,
 	}
 
-	var MarshalJSON []byte
-	MarshalJSON, err = json.Marshal(vmInfo)
+	rawVmInfo, err := json.Marshal(vmInfo)
 	if err != nil {
 		return models.Vm{}, err
 	}
@@ -55,24 +52,20 @@ func createInfoJSON(opts InstallOpts, filePath string) (models.Vm, error) {
 
 	fileName := createJSONPath + vmInfo.Name + "-" + vmInfo.Metadata.Id.String() + ".json"
 
-	var createFile *os.File
-	createFile, err = os.Create(fileName)
+	createFile, err := os.Create(fileName)
 	if err != nil {
 		return models.Vm{}, err
 	}
 	defer func() {
 		err = createFile.Close()
-		if err != nil {
-			fmt.Println(err)
-		}
 	}()
 
-	_, err = createFile.Write(MarshalJSON)
+	_, err = createFile.Write(rawVmInfo)
 	if err != nil {
 		return models.Vm{}, err
 	}
 
-	return vmInfo, err
+	return vmInfo, nil
 }
 
 func CheckFileType(filePath string) (models.DiskType, error) {
@@ -81,46 +74,34 @@ func CheckFileType(filePath string) (models.DiskType, error) {
 		return "", err
 	}
 
-	readFile := bytes.NewReader(buf)
-	if !bytes.Equal(ReadBinaryFile(readFile, 4), []byte("QFI\xfb")) {
+	if !bytes.Equal(buf[:4], []byte("QFI\xfb")) {
 		return "", errors.New("Not QEMU QCOW Image (v3) ")
 	}
 
 	return models.DiskTypeQcow2, nil
 }
 
-func ReadBinaryFile(readFile io.Reader, index int) []byte {
-	buf := make([]byte, index)
-	cnt, err := readFile.Read(buf)
-	if err != nil || index != cnt {
-		return []byte{}
-	}
-	return buf
-}
-
-func ConvertToStruct(directoryPath string) ([]models.Vm, error) {
-	var resJSONList []models.Vm
+func getAllVms(directoryPath string) ([]models.Vm, error) {
+	var vmList []models.Vm
 	dir, err := os.ReadDir(directoryPath)
 	if err != nil {
 		return []models.Vm{}, err
 	}
 
-	var resJSON models.Vm
-	var raw []byte
-
 	for _, file := range dir {
-		raw, err = os.ReadFile(directoryPath + file.Name())
+		raw, err := os.ReadFile(directoryPath + file.Name())
 		if err != nil {
 			return []models.Vm{}, err
 		}
 
-		err = json.Unmarshal(raw, &resJSON)
+		var vm models.Vm
+		err = json.Unmarshal(raw, &vm)
 		if err != nil {
 			return []models.Vm{}, err
 		}
 
-		resJSONList = append(resJSONList, resJSON)
+		vmList = append(vmList, vm)
 
 	}
-	return resJSONList, err
+	return vmList, err
 }

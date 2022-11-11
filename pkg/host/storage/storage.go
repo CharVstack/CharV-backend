@@ -1,10 +1,10 @@
-package host
+package storage
 
 import (
 	"github.com/CharVstack/CharV-backend/domain/models"
 )
 
-func GetStorageInfo(getInfo models.Host) []models.StoragePool {
+func GetInfo(getInfo models.Host) []models.StoragePool {
 	var storageInfoPointer = make([]*models.StoragePool, len(getInfo.StoragePools))
 
 	for getInfoIndex, pool := range getInfo.StoragePools {

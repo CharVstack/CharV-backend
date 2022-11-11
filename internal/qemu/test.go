@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/CharVstack/CharV-backend/domain/models"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestParse(t *testing.T) {
@@ -30,10 +31,23 @@ func TestParse(t *testing.T) {
 	}
 }
 
-func TestConvertToStruct(t *testing.T) {
-	vms, err := ConvertToStruct("../../test/resources/machines/")
+func TestGetAllVms(t *testing.T) {
+	vms, err := getAllVms("../../test/resources/machines/")
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Logf("%#v", vms)
+}
+
+func TestCheckFileType(t *testing.T) {
+	var err error
+	_, err = CheckFileType("../../test/resources/image/ok.qcow2")
+	if !assert.NoError(t, err) {
+		t.Fatal(err)
+	}
+
+	_, err = CheckFileType("../../test/resources/image/bad.qcow2")
+	if !assert.Error(t, err) {
+		t.Fail()
+	}
 }

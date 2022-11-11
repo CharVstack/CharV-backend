@@ -1,10 +1,12 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 	"os"
 
 	"github.com/CharVstack/CharV-backend/internal/util"
+	"github.com/CharVstack/CharV-backend/middleware"
 	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
 
 	"github.com/CharVstack/CharV-backend/domain/models"
@@ -17,15 +19,14 @@ import (
 type V1Handler struct{}
 
 func (v V1Handler) GetApiV1Host(c *gin.Context) {
-	storageDirEnv := os.Getenv("STORAGE_DIR")
-	storageDir := host.GetInfoOptions{
-		StorageDir: storageDirEnv,
+	storageDir := os.Getenv("STORAGE_DIR")
+	getHostInfoOpts := host.GetInfoOptions{
+		StorageDir: storageDir,
 	}
-	hostInfo, err := host.GetInfo(storageDir)
+	hostInfo, err := host.GetInfo(getHostInfoOpts)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		middleware.GenericErrorHandler(c, err, http.StatusInternalServerError)
+		return
 	}
 	c.JSON(http.StatusOK, models.GetHost200Response{
 		Data: hostInfo,
@@ -35,7 +36,7 @@ func (v V1Handler) GetApiV1Host(c *gin.Context) {
 func (v V1Handler) GetApiV1Vms(c *gin.Context) {
 	allVmsInfo, err := qemu.GetAllVmInfo()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		middleware.GenericErrorHandler(c, err, http.StatusInternalServerError)
 		return
 	}
 	c.JSON(http.StatusOK, models.GetAllVMsList200Response{
@@ -47,20 +48,19 @@ func (v V1Handler) GetApiV1Vms(c *gin.Context) {
 func (v V1Handler) PostApiV1Vms(c *gin.Context) {
 	var requestBody models.PostApiV1VmsJSONRequestBody
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		middleware.GenericErrorHandler(c, err, http.StatusBadRequest)
 		return
 	}
 
 	err := util.ExistsSufficientMemory(uint64(requestBody.Memory))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		middleware.GenericErrorHandler(c, err, http.StatusInternalServerError)
 		return
 	}
 
-	var vm models.Vm
-	vm, err = qemu.CreateVm(requestBody)
+	vm, err := qemu.CreateVm(requestBody)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		middleware.GenericErrorHandler(c, err, http.StatusInternalServerError)
 		return
 	}
 
@@ -71,20 +71,24 @@ func (v V1Handler) PostApiV1Vms(c *gin.Context) {
 
 func (v V1Handler) GetApiV1VmsVmId(c *gin.Context, vmId openapi_types.UUID) {
 	//TODO implement me
-	panic("implement me")
+	middleware.GenericErrorHandler(c, errors.New("implement me"), http.StatusInternalServerError)
+	return
 }
 
 func (v V1Handler) PatchApiV1VmsVmId(c *gin.Context, vmId openapi_types.UUID) {
 	//TODO implement me
-	panic("implement me")
+	middleware.GenericErrorHandler(c, errors.New("implement me"), http.StatusInternalServerError)
+	return
 }
 
 func (v V1Handler) GetApiV1VmsVmIdPower(c *gin.Context, vmId openapi_types.UUID) {
 	//TODO implement me
-	panic("implement me")
+	middleware.GenericErrorHandler(c, errors.New("implement me"), http.StatusInternalServerError)
+	return
 }
 
 func (v V1Handler) PostApiV1VmsVmIdPowerAction(c *gin.Context, vmId openapi_types.UUID, params models.PostApiV1VmsVmIdPowerActionParams) {
 	//TODO implement me
-	panic("implement me")
+	middleware.GenericErrorHandler(c, errors.New("implement me"), http.StatusInternalServerError)
+	return
 }

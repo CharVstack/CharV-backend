@@ -24,13 +24,12 @@ func install(opts InstallOpts, filePath string) (models.Vm, error) {
 	}
 	cmd := buf.String()
 
-	var resJSON models.Vm
-	resJSON, err = createInfoJSON(opts, filePath)
+	vm, err := getVmInfo(opts, filePath)
 	if err != nil {
 		return models.Vm{}, err
 	}
 
-	return resJSON, run(cmd)
+	return vm, run(cmd)
 }
 
 // CreateVm diskとVmをcharV-libの関数から作成する
