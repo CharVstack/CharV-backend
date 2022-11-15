@@ -2,9 +2,9 @@ package host
 
 import (
 	"github.com/CharVstack/CharV-backend/domain/models"
-	"github.com/CharVstack/CharV-backend/internal/host/cpu"
-	"github.com/CharVstack/CharV-backend/internal/host/memory"
-	"github.com/CharVstack/CharV-backend/internal/host/storage"
+	"github.com/CharVstack/CharV-backend/pkg/host/cpu"
+	"github.com/CharVstack/CharV-backend/pkg/host/memory"
+	"github.com/CharVstack/CharV-backend/pkg/host/storage"
 )
 
 func GetInfo(opt GetInfoOptions) (models.Host, error) {
