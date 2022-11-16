@@ -29,8 +29,6 @@ type StoragePoolStatus = models.StoragePoolStatus
 
 type Vm = models.Vm
 
-type VmStatus = models.VmStatus
-
 type VmPowerInfo = models.VmPowerInfo
 
 type VmPowerInfoState = models.VmPowerInfoState
@@ -47,6 +45,10 @@ type PatchUpdateVMByVMId200Response = models.PatchUpdateVMByVMId200Response
 
 type PostCreateNewVM200Response = models.PostCreateNewVM200Response
 
+type PatchUpdateVMRequest = models.PatchUpdateVMRequest
+
+type PostCreateNewVMRequest = models.PostCreateNewVMRequest
+
 type PostApiV1VmsJSONBody = models.PostApiV1VmsJSONBody
 
 type PatchApiV1VmsVmIdJSONBody = models.PatchApiV1VmsVmIdJSONBody
@@ -58,5 +60,3 @@ type PostApiV1VmsVmIdPowerActionParamsAction = models.PostApiV1VmsVmIdPowerActio
 type PostApiV1VmsJSONRequestBody = models.PostApiV1VmsJSONRequestBody
 
 type PatchApiV1VmsVmIdJSONRequestBody = models.PatchApiV1VmsVmIdJSONRequestBody
-
-type GetApiV1VmsVmIdPowerJSONRequestBody = models.VmPowerInfo

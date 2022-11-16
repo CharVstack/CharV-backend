@@ -20,31 +20,23 @@ const (
 
 // Defines values for StoragePoolStatus.
 const (
-	StoragePoolStatusActive StoragePoolStatus = "Active"
-	StoragePoolStatusError  StoragePoolStatus = "Error"
-)
-
-// Defines values for VmStatus.
-const (
-	VmStatusActive  VmStatus = "active"
-	VmStatusError   VmStatus = "error"
-	VmStatusPending VmStatus = "pending"
-	VmStatusUnknown VmStatus = "unknown"
+	ACTIVE StoragePoolStatus = "ACTIVE"
+	ERROR  StoragePoolStatus = "ERROR"
 )
 
 // Defines values for VmPowerInfoState.
 const (
-	POWEREDOFF VmPowerInfoState = "POWERED_OFF"
-	POWEREDON  VmPowerInfoState = "POWERED_ON"
-	SUSPENDED  VmPowerInfoState = "SUSPENDED"
+	RUNNING  VmPowerInfoState = "RUNNING"
+	SHUTDOWN VmPowerInfoState = "SHUTDOWN"
+	UNKNOWN  VmPowerInfoState = "UNKNOWN"
 )
 
 // Defines values for PostApiV1VmsVmIdPowerActionParamsAction.
 const (
-	Reset   PostApiV1VmsVmIdPowerActionParamsAction = "reset"
-	Start   PostApiV1VmsVmIdPowerActionParamsAction = "start"
-	Stop    PostApiV1VmsVmIdPowerActionParamsAction = "stop"
-	Suspend PostApiV1VmsVmIdPowerActionParamsAction = "suspend"
+	Reboot   PostApiV1VmsVmIdPowerActionParamsAction = "reboot"
+	Reset    PostApiV1VmsVmIdPowerActionParamsAction = "reset"
+	Shutdown PostApiV1VmsVmIdPowerActionParamsAction = "shutdown"
+	Start    PostApiV1VmsVmIdPowerActionParamsAction = "start"
 )
 
 // Cpu ホストのCPU情報
@@ -61,7 +53,8 @@ type Devices struct {
 // Disk defines model for Disk.
 type Disk struct {
 	Device DiskDevice `json:"device"`
-	Path   string     `json:"path"`
+	Name   string     `json:"name"`
+	Pool   string     `json:"pool"`
 	Type   DiskType   `json:"type"`
 }
 
@@ -76,8 +69,8 @@ type Host struct {
 	// Cpu ホストのCPU情報
 	Cpu Cpu `json:"cpu"`
 
-	// Mem ホストのメモリ情報
-	Mem          Memory        `json:"mem"`
+	// Memory ホストのメモリ情報
+	Memory       Memory        `json:"memory"`
 	StoragePools []StoragePool `json:"storage_pools"`
 }
 
@@ -109,16 +102,12 @@ type StoragePoolStatus string
 
 // Vm 仮想マシンを表すモデル
 type Vm struct {
+	Cpu      int      `json:"cpu"`
 	Devices  Devices  `json:"devices"`
 	Memory   int      `json:"memory"`
 	Metadata Metadata `json:"metadata"`
 	Name     string   `json:"name"`
-	Status   VmStatus `json:"status"`
-	Vcpu     int      `json:"vcpu"`
 }
-
-// VmStatus defines model for Vm.Status.
-type VmStatus string
 
 // VmPowerInfo defines model for VmPowerInfo.
 type VmPowerInfo struct {
@@ -131,55 +120,63 @@ type VmPowerInfoState string
 
 // GetAllVMsList200Response defines model for GetAllVMsList200Response.
 type GetAllVMsList200Response struct {
-	Data    []Vm    `json:"data"`
-	Message *string `json:"message,omitempty"`
+	Vms []Vm `json:"vms"`
 }
 
 // GetHost200Response defines model for GetHost200Response.
 type GetHost200Response struct {
-	Data    Host    `json:"data"`
-	Message *string `json:"message,omitempty"`
+	Host Host `json:"host"`
 }
 
 // GetVMByVMId200Response defines model for GetVMByVMId200Response.
 type GetVMByVMId200Response struct {
-	// Data 仮想マシンを表すモデル
-	Data    Vm      `json:"data"`
-	Message *string `json:"message,omitempty"`
+	// Vm 仮想マシンを表すモデル
+	Vm Vm `json:"vm"`
 }
 
 // GetVMPowerByVMId200Response defines model for GetVMPowerByVMId200Response.
 type GetVMPowerByVMId200Response struct {
-	Data    VmPowerInfo `json:"data"`
-	Message *string     `json:"message,omitempty"`
+	VmPower VmPowerInfo `json:"vm_power"`
 }
 
 // PatchUpdateVMByVMId200Response defines model for PatchUpdateVMByVMId200Response.
 type PatchUpdateVMByVMId200Response struct {
-	// Data 仮想マシンを表すモデル
-	Data    Vm      `json:"data"`
-	Message *string `json:"message,omitempty"`
+	// Vm 仮想マシンを表すモデル
+	Vm Vm `json:"vm"`
 }
 
 // PostCreateNewVM200Response defines model for PostCreateNewVM200Response.
 type PostCreateNewVM200Response struct {
-	// Data 仮想マシンを表すモデル
-	Data    Vm      `json:"data"`
-	Message *string `json:"message,omitempty"`
+	// Vm 仮想マシンを表すモデル
+	Vm Vm `json:"vm"`
+}
+
+// PatchUpdateVMRequest defines model for PatchUpdateVMRequest.
+type PatchUpdateVMRequest struct {
+	Cpu    int    `json:"cpu"`
+	Memory int    `json:"memory"`
+	Name   string `json:"name"`
+}
+
+// PostCreateNewVMRequest defines model for PostCreateNewVMRequest.
+type PostCreateNewVMRequest struct {
+	Cpu    int    `json:"cpu"`
+	Memory int    `json:"memory"`
+	Name   string `json:"name"`
 }
 
 // PostApiV1VmsJSONBody defines parameters for PostApiV1Vms.
 type PostApiV1VmsJSONBody struct {
+	Cpu    int    `json:"cpu"`
 	Memory int    `json:"memory"`
 	Name   string `json:"name"`
-	Vcpu   int    `json:"vcpu"`
 }
 
 // PatchApiV1VmsVmIdJSONBody defines parameters for PatchApiV1VmsVmId.
 type PatchApiV1VmsVmIdJSONBody struct {
-	Memory *int    `json:"memory,omitempty"`
-	Name   *string `json:"name,omitempty"`
-	Vcpu   *int    `json:"vcpu,omitempty"`
+	Cpu    int    `json:"cpu"`
+	Memory int    `json:"memory"`
+	Name   string `json:"name"`
 }
 
 // PostApiV1VmsVmIdPowerActionParams defines parameters for PostApiV1VmsVmIdPowerAction.
