@@ -5,12 +5,13 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/CharVstack/CharV-backend/internal/util"
+	"github.com/CharVstack/CharV-backend/pkg/qemu"
+	"github.com/CharVstack/CharV-backend/pkg/util"
+
 	"github.com/CharVstack/CharV-backend/middleware"
 	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
 
 	"github.com/CharVstack/CharV-backend/domain/models"
-	"github.com/CharVstack/CharV-backend/internal/qemu"
 	"github.com/CharVstack/CharV-backend/pkg/host"
 	"github.com/gin-gonic/gin"
 )
