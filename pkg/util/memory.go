@@ -3,7 +3,7 @@ package util
 import (
 	"errors"
 
-	"github.com/CharVstack/CharV-backend/internal/host/memory"
+	"github.com/CharVstack/CharV-backend/pkg/host/memory"
 )
 
 func ExistsSufficientMemory(guestMemory uint64) error {
