@@ -12,9 +12,9 @@ func GetInfo() (models.Memory, error) {
 	}
 
 	return models.Memory{
-		Total:       memInfo.Total,
-		Used:        memInfo.Used,
-		Free:        memInfo.Free,
-		UsedPercent: memInfo.UsedPercent,
+		Total:   memInfo.Total,
+		Used:    memInfo.Used,
+		Free:    memInfo.Free,
+		Percent: memInfo.UsedPercent,
 	}, nil
 }

@@ -47,7 +47,7 @@ func GetInfo(opt GetInfoOptions) (models.Host, error) {
 
 	return models.Host{
 		Cpu:          cpuInfo,
-		Mem:          memoryInfo,
+		Memory:       memoryInfo,
 		StoragePools: storagePools,
 	}, nil
 }

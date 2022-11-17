@@ -38,9 +38,9 @@ func CreateVm(vmInfo models.PostApiV1VmsJSONRequestBody) (models.Vm, error) {
 	toGetInfo := InstallOpts{
 		Name:   vmInfo.Name,
 		Memory: vmInfo.Memory,
-		VCpu:   vmInfo.Vcpu,
+		VCpu:   vmInfo.Cpu,
 		Image:  "ubuntu-20.04.5-live-server-amd64.iso",
-		Disk:   vmInfo.Name + "Disk",
+		Disk:   vmInfo.Name + "Disk", // ToDo: 現在ストレージの複数作成機能がフロントエンドにないので１つを前提にしている
 	}
 
 	name, err := createDisk(toGetInfo.Disk)
@@ -93,7 +93,6 @@ func getVmInfo(opts InstallOpts, filePath string) (vmInfo models.Vm, err error) 
 	if err != nil {
 		return models.Vm{}, err
 	}
-	typeMap := map[models.DiskType]string{models.DiskTypeQcow2: ".qcow2"}
 
 	vmInfo = models.Vm{
 		Devices: models.Devices{
@@ -101,7 +100,8 @@ func getVmInfo(opts InstallOpts, filePath string) (vmInfo models.Vm, err error) 
 				{
 					Type:   diskType,
 					Device: models.DiskDeviceDisk,
-					Path:   "/var/lib/charVstack/image/" + opts.Disk + typeMap[diskType],
+					Name:   opts.Disk,
+					Pool:   "default", // ToDo: ストレージの選択機能がないので "default" で固定
 				},
 			},
 		},
@@ -111,7 +111,7 @@ func getVmInfo(opts InstallOpts, filePath string) (vmInfo models.Vm, err error) 
 			Id:         uuidObj,
 		},
 		Name: opts.Name,
-		Vcpu: opts.VCpu,
+		Cpu:  opts.VCpu,
 	}
 
 	rawVmInfo, err := json.Marshal(vmInfo)
