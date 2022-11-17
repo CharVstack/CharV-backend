@@ -76,10 +76,10 @@ type Host struct {
 
 // Memory ホストのメモリ情報
 type Memory struct {
-	Free        uint64  `json:"free"`
-	Total       uint64  `json:"total"`
-	Used        uint64  `json:"used"`
-	UsedPercent float64 `json:"used_percent"`
+	Free    uint64  `json:"free"`
+	Percent float64 `json:"percent"`
+	Total   uint64  `json:"total"`
+	Used    uint64  `json:"used"`
 }
 
 // Metadata defines model for Metadata.
