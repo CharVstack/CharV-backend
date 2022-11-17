@@ -66,7 +66,10 @@ func main() {
 		MaxAge:           24 * time.Hour,
 	}))
 
-	v1Handler := handler.V1Handler{}
+	opts := handler.ServerConfig{
+		StorageDir: os.Getenv("STORAGE_DIR"),
+	}
+	v1Handler := handler.NewV1Handler(opts)
 
 	ginServerOpts := adapters.GinServerOptions{
 		ErrorHandler: middleware.GenericErrorHandler,

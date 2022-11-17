@@ -3,7 +3,6 @@ package handler
 import (
 	"errors"
 	"net/http"
-	"os"
 
 	"github.com/CharVstack/CharV-backend/pkg/qemu"
 	"github.com/CharVstack/CharV-backend/pkg/util"
@@ -16,13 +15,24 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type ServerConfig struct {
+	StorageDir string
+}
+
 // V1Handler 引数を返さないので空
-type V1Handler struct{}
+type V1Handler struct {
+	Config ServerConfig
+}
+
+func NewV1Handler(opts ServerConfig) *V1Handler {
+	handler := &V1Handler{}
+	handler.Config = opts
+	return handler
+}
 
 func (v V1Handler) GetApiV1Host(c *gin.Context) {
-	storageDir := os.Getenv("STORAGE_DIR")
 	getHostInfoOpts := host.GetInfoOptions{
-		StorageDir: storageDir,
+		StorageDir: v.Config.StorageDir,
 	}
 	hostInfo, err := host.GetInfo(getHostInfoOpts)
 	if err != nil {
