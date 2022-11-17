@@ -12,20 +12,21 @@ func TestParse(t *testing.T) {
 	testVm := models.Vm{
 		Name:   "ubuntu",
 		Memory: 1024,
-		Vcpu:   1,
+		Cpu:    1,
 		Devices: models.Devices{
 			Disk: []models.Disk{
 				{
-					Type: "file",
-					Path: "/path/to/ubuntu.qcow2",
+					Name:   "ubuntu",
+					Pool:   "default",
+					Type:   "qcow2",
+					Device: "disk",
 				},
 			},
 		},
 		Metadata: models.Metadata{
 			Id:         uuid.Must(uuid.Parse("0bfb8def-86ed-4b9d-8826-66a6ab1c1491")),
-			ApiVersion: "0.0.1",
+			ApiVersion: "v1",
 		},
-		Status: "active",
 	}
 	machine, err := parse("../../test/resources/machines/ubuntu.json")
 	if err != nil {

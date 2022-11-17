@@ -40,7 +40,7 @@ func (v V1Handler) GetApiV1Host(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, models.GetHost200Response{
-		Data: hostInfo,
+		Host: hostInfo,
 	})
 }
 
@@ -51,7 +51,7 @@ func (v V1Handler) GetApiV1Vms(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, models.GetAllVMsList200Response{
-		Data: allVmsInfo,
+		Vms: allVmsInfo,
 	})
 }
 
@@ -76,7 +76,7 @@ func (v V1Handler) PostApiV1Vms(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, models.PostCreateNewVM200Response{
-		Data: vm,
+		Vm: vm,
 	})
 }
 
