@@ -1,17 +1,19 @@
 {
     "name": "ubuntu",
     "memory": 1024,
-    "vcpu": 1,
+    "cpu": 1,
     "devices": {
         "disk": [
             {
-                "type": "file",
-                "path": "/path/to/ubuntu.qcow2"
+                "name": "ubuntu",
+                "pool": "default",
+                "type": "qcow2",
+                "device": "disk"
             }
         ]
     },
     "metadata": {
-        "api_version": "0.0.1",
+        "api_version": "v1",
         "id": "0bfb8def-86ed-4b9d-8826-66a6ab1c1491"
     },
     "status": "active"
