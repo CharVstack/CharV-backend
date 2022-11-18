@@ -102,9 +102,9 @@ type StoragePoolStatus string
 
 // Vm 仮想マシンを表すモデル
 type Vm struct {
-	Cpu      int      `json:"cpu"`
+	Cpu      uint64   `json:"cpu"`
 	Devices  Devices  `json:"devices"`
-	Memory   int      `json:"memory"`
+	Memory   uint64   `json:"memory"`
 	Metadata Metadata `json:"metadata"`
 	Name     string   `json:"name"`
 }
