@@ -35,7 +35,7 @@ func Logger(logger rz.Logger) gin.HandlerFunc {
 			)
 		} else {
 			logger.Info(
-				"Lgger",
+				"Logger",
 				rz.Int("status", c.Writer.Status()),
 				rz.String("method", c.Request.Method),
 				rz.String("path", c.Request.URL.Path),
