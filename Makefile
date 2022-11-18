@@ -47,11 +47,21 @@ test/resources/image/bad.qcow2:
 test/resources/image/ok.qcow2:
 	qemu-img create -f qcow2 test/resources/image/ok.qcow2 4G
 
-tools:
+tools: tools/goimports tools/gcov2lcov tools/air # Install Tools
+
+tools/goimports:
 	GOBIN=$(GOBIN) go install golang.org/x/tools/cmd/goimports@v0.3.0
+
+tools/gcov2lcov:
 	GOBIN=$(GOBIN) go install github.com/jandelgado/gcov2lcov@v1.0.5
 
-build: $(BINARIES) test ## Build Server Binary
+tools/air:
+	GOBIN=$(GOBIN) go install github.com/cosmtrek/air@v1.40.4
+
+dev: tools # Run Development Server
+	tools/air
+
+build: $(BINARIES) ## Build Server Binary
 
 $(BINARIES): $(GO_FILES) VERSION .git/HEAD
 	@go build -o $@ $(GO_BUILD) $(@:$(BINDIR)/%=$(ROOT_PACKAGE)/cmd/%)
