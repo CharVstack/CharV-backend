@@ -14,5 +14,7 @@ jobs:
         with:
           go-version-file: ./go.mod
           cache: true
+      - name: Install qemu-img
+        run: sudo apt-get update && sudo apt install -y qemu-utils
       - name: Run test
-        run: go test -v -run ./...
+        run: make test

@@ -1,5 +1,6 @@
 .DEFAULT_GOAL := help
 BINDIR := bin
+GOBIN := $(abspath tools)
 
 ROOT_PACKAGE := $(shell go list .)
 COMMAND_PACKAGES := $(shell go list ./cmd/...)
@@ -29,13 +30,13 @@ get: ## Update dependencies
 tidy: ## Optimize go.mod and go.sum
 	go mod tidy
 
-fmt: ## Format Code
-	goimports -w ./
+fmt: tools ## Format Code
+	tools/goimports -w ./
 
 lint: fmt tidy ## Lint Code
 	go vet ./...
 
-test: lint ## Run Test
+test: testassets ## Run Test
 	go test -v ./...
 
 testassets: test/resources/image/bad.qcow2 test/resources/image/ok.qcow2 ## Generate Test Assets
@@ -46,13 +47,17 @@ test/resources/image/bad.qcow2:
 test/resources/image/ok.qcow2:
 	qemu-img create -f qcow2 test/resources/image/ok.qcow2 4G
 
+tools:
+	GOBIN=$(GOBIN) go install golang.org/x/tools/cmd/goimports@v0.3.0
+	GOBIN=$(GOBIN) go install github.com/jandelgado/gcov2lcov@v1.0.5
+
 build: $(BINARIES) test ## Build Server Binary
 
 $(BINARIES): $(GO_FILES) VERSION .git/HEAD
 	@go build -o $@ $(GO_BUILD) $(@:$(BINDIR)/%=$(ROOT_PACKAGE)/cmd/%)
 
-coverage: # Generate Coverage
+coverage: testassets tools # Generate Coverage
 	go test -cover ./... -coverprofile=coverage.out
-	go run github.com/jandelgado/gcov2lcov@v1.0.5 -infile=coverage.out -outfile=coverage.lcov
+	tools/gcov2lcov -infile=coverage.out -outfile=coverage.lcov
 	genhtml coverage.lcov -o site
 	go tool cover -html=coverage.out -o site/gocoverage.html
