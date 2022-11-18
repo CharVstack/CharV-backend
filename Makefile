@@ -16,7 +16,7 @@ GO_LDFLAGS:=$(GO_LDFLAGS_VERSION)
 # go build
 GO_BUILD:=-ldflags "$(GO_LDFLAGS)"
 
-.PHONY: help fmt lint test build
+.PHONY: help fmt lint test build coverage
 
 help:
 	@cat $(MAKEFILE_LIST) | \
@@ -36,7 +36,7 @@ lint: fmt tidy ## Lint Code
 	go vet ./...
 
 test: lint ## Run Test
-	go test -v -cover ./...
+	go test -v ./...
 
 testassets: test/resources/image/bad.qcow2 test/resources/image/ok.qcow2 ## Generate Test Assets
 
@@ -50,3 +50,9 @@ build: $(BINARIES) test ## Build Server Binary
 
 $(BINARIES): $(GO_FILES) VERSION .git/HEAD
 	@go build -o $@ $(GO_BUILD) $(@:$(BINDIR)/%=$(ROOT_PACKAGE)/cmd/%)
+
+coverage: # Generate Coverage
+	go test -cover ./... -coverprofile=coverage.out
+	go run github.com/jandelgado/gcov2lcov@v1.0.5 -infile=coverage.out -outfile=coverage.lcov
+	genhtml coverage.lcov -o site
+	go tool cover -html=coverage.out -o site/gocoverage.html
