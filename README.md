@@ -4,10 +4,16 @@
 
 ## 開発環境の構築
 
-### goimports のインストール方法
+### 依存ツールのインストール
 
 ```shell
-go install golang.org/x/tools/cmd/goimports@latest
+make tools
+```
+
+### 開発サーバーの起動
+
+```shell
+make dev
 ```
 
 ### テストやフォーマットなど
