@@ -102,7 +102,7 @@ type StoragePoolStatus string
 
 // Vm 仮想マシンを表すモデル
 type Vm struct {
-	Cpu      uint64   `json:"cpu"`
+	Cpu      int      `json:"cpu"`
 	Devices  Devices  `json:"devices"`
 	Memory   uint64   `json:"memory"`
 	Metadata Metadata `json:"metadata"`
@@ -167,14 +167,14 @@ type PostCreateNewVMRequest struct {
 
 // PostApiV1VmsJSONBody defines parameters for PostApiV1Vms.
 type PostApiV1VmsJSONBody struct {
-	Cpu    uint64 `json:"cpu"`
+	Cpu    int    `json:"cpu"`
 	Memory uint64 `json:"memory"`
 	Name   string `json:"name"`
 }
 
 // PatchApiV1VmsVmIdJSONBody defines parameters for PatchApiV1VmsVmId.
 type PatchApiV1VmsVmIdJSONBody struct {
-	Cpu    *uint64 `json:"cpu,omitempty"`
+	Cpu    *int    `json:"cpu,omitempty"`
 	Memory *uint64 `json:"memory,omitempty"`
 	Name   *string `json:"name,omitempty"`
 }
