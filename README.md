@@ -1,4 +1,6 @@
 # CharV-backend
+<img alt="Coverage" src="https://charvstack.github.io/CharV-backend/coverage.svg">
+</a>
 
 ## 開発環境の構築
 
