@@ -174,9 +174,9 @@ type PostApiV1VmsJSONBody struct {
 
 // PatchApiV1VmsVmIdJSONBody defines parameters for PatchApiV1VmsVmId.
 type PatchApiV1VmsVmIdJSONBody struct {
-	Cpu    int    `json:"cpu"`
-	Memory int    `json:"memory"`
-	Name   string `json:"name"`
+	Cpu    *int    `json:"cpu,omitempty"`
+	Memory *int    `json:"memory,omitempty"`
+	Name   *string `json:"name,omitempty"`
 }
 
 // PostApiV1VmsVmIdPowerActionParams defines parameters for PostApiV1VmsVmIdPowerAction.
