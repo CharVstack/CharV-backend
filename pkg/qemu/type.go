@@ -2,8 +2,8 @@ package qemu
 
 type InstallOpts struct {
 	Name   string
-	Memory int
-	VCpu   int
+	Memory uint64
+	VCpu   uint64
 	Image  string
 	Disk   string
 }
