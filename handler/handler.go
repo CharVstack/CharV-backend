@@ -70,7 +70,7 @@ func (v V1Handler) PostApiV1Vms(c *gin.Context) {
 		return
 	}
 
-	vm, err := qemu.CreateVm(requestBody)
+	vm, err := qemu.CreateVm(requestBody, v.Config.SocketsDir)
 	if err != nil {
 		middleware.GenericErrorHandler(c, err, http.StatusInternalServerError)
 		return
