@@ -14,7 +14,7 @@ import (
 )
 
 func install(opts InstallOpts, filePath string) (models.Vm, error) {
-	tmpl, err := template.New("install").Parse(`qemu-system-x86_64 -accel kvm -daemonize -display none -name guest={{.Name}} -smp {{.VCpu}} -m {{.Memory}} -cdrom /var/lib/charVstack/iso/{{.Image}} -boot order=d -drive file=/var/lib/charVstack/images/{{.Disk}}.qcow2,format=qcow2 -drive file=/var/lib/charVstack/bios/bios.bin,format=raw,if=pflash,readonly=on`)
+	tmpl, err := template.New("install").Parse(`qemu-system-x86_64 -accel kvm -daemonize -display none -name guest={{.Name}} -smp {{.VCpu}} -m {{.Memory}} -cdrom /var/lib/charVstack/iso/{{.Image}} -boot order=d -drive file=/var/lib/charVstack/images/{{.Disk}}.qcow2,format=qcow2 -drive file=/var/lib/charVstack/bios/bios.bin,format=raw,if=pflash,readonly=on -monitor unix:/{{.SocketPath}}/{{.Id}}.sock,server,nowait`)
 	if err != nil {
 		return models.Vm{}, err
 	}
@@ -34,13 +34,20 @@ func install(opts InstallOpts, filePath string) (models.Vm, error) {
 }
 
 // CreateVm diskとVmをcharV-libの関数から作成する
-func CreateVm(vmInfo models.PostApiV1VmsJSONRequestBody) (models.Vm, error) {
+func CreateVm(vmInfo models.PostApiV1VmsJSONRequestBody, socksPath string) (models.Vm, error) {
+	id, err := uuid.NewRandom()
+	if err != nil {
+		return models.Vm{}, err
+	}
+
 	toGetInfo := InstallOpts{
-		Name:   vmInfo.Name,
-		Memory: vmInfo.Memory,
-		VCpu:   vmInfo.Cpu,
-		Image:  "ubuntu-20.04.5-live-server-amd64.iso",
-		Disk:   vmInfo.Name + "Disk", // ToDo: 現在ストレージの複数作成機能がフロントエンドにないので１つを前提にしている
+		Name:       vmInfo.Name,
+		Memory:     vmInfo.Memory,
+		VCpu:       vmInfo.Cpu,
+		Image:      "ubuntu-20.04.5-live-server-amd64.iso",
+		Disk:       vmInfo.Name + "Disk", // ToDo: 現在ストレージの複数作成機能がフロントエンドにないので１つを前提にしている
+		Id:         id,
+		SocketPath: socksPath,
 	}
 
 	name, err := createDisk(toGetInfo.Disk)
@@ -83,7 +90,6 @@ func getAllVms(directoryPath string) ([]models.Vm, error) {
 }
 
 func getVmInfo(opts InstallOpts, filePath string) (vmInfo models.Vm, err error) {
-	uuidObj, err := uuid.NewRandom()
 	if err != nil {
 		return models.Vm{}, err
 	}
@@ -108,7 +114,7 @@ func getVmInfo(opts InstallOpts, filePath string) (vmInfo models.Vm, err error) 
 		Memory: opts.Memory,
 		Metadata: models.Metadata{
 			ApiVersion: "v1",
-			Id:         uuidObj,
+			Id:         opts.Id,
 		},
 		Name: opts.Name,
 		Cpu:  opts.VCpu,
