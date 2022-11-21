@@ -61,7 +61,7 @@
 				
 				<option value="file2">github.com/CharVstack/CharV-backend/pkg/qemu/disk.go (31.2%)</option>
 				
-				<option value="file3">github.com/CharVstack/CharV-backend/pkg/qemu/vm.go (21.2%)</option>
+				<option value="file3">github.com/CharVstack/CharV-backend/pkg/qemu/vm.go (20.7%)</option>
 				
 				</select>
 			</div>
@@ -192,7 +192,7 @@ import (
 )
 
 func install(opts InstallOpts, filePath string) (models.Vm, error) <span class="cov0" title="0">{
-        tmpl, err := template.New("install").Parse(`qemu-system-x86_64 -accel kvm -daemonize -display none -name guest={{.Name}} -smp {{.VCpu}} -m {{.Memory}} -cdrom /var/lib/charVstack/iso/{{.Image}} -boot order=d -drive file=/var/lib/charVstack/images/{{.Disk}}.qcow2,format=qcow2 -drive file=/var/lib/charVstack/bios/bios.bin,format=raw,if=pflash,readonly=on`)
+        tmpl, err := template.New("install").Parse(`qemu-system-x86_64 -accel kvm -daemonize -display none -name guest={{.Name}} -smp {{.VCpu}} -m {{.Memory}} -cdrom /var/lib/charVstack/iso/{{.Image}} -boot order=d -drive file=/var/lib/charVstack/images/{{.Disk}}.qcow2,format=qcow2 -drive file=/var/lib/charVstack/bios/bios.bin,format=raw,if=pflash,readonly=on -monitor unix:/{{.SocketPath}}/{{.Id}}.sock,server,nowait`)
         if err != nil </span><span class="cov0" title="0">{
                 return models.Vm{}, err
         }</span>
@@ -212,13 +212,20 @@ func install(opts InstallOpts, filePath string) (models.Vm, error) <span class="
 }
 
 // CreateVm diskとVmをcharV-libの関数から作成する
-func CreateVm(vmInfo models.PostApiV1VmsJSONRequestBody) (models.Vm, error) <span class="cov0" title="0">{
-        toGetInfo := InstallOpts{
-                Name:   vmInfo.Name,
-                Memory: vmInfo.Memory,
-                VCpu:   vmInfo.Cpu,
-                Image:  "ubuntu-20.04.5-live-server-amd64.iso",
-                Disk:   vmInfo.Name + "Disk", // ToDo: 現在ストレージの複数作成機能がフロントエンドにないので１つを前提にしている
+func CreateVm(vmInfo models.PostApiV1VmsJSONRequestBody, socksPath string) (models.Vm, error) <span class="cov0" title="0">{
+        id, err := uuid.NewRandom()
+        if err != nil </span><span class="cov0" title="0">{
+                return models.Vm{}, err
+        }</span>
+
+        <span class="cov0" title="0">toGetInfo := InstallOpts{
+                Name:       vmInfo.Name,
+                Memory:     vmInfo.Memory,
+                VCpu:       vmInfo.Cpu,
+                Image:      "ubuntu-20.04.5-live-server-amd64.iso",
+                Disk:       vmInfo.Name + "Disk", // ToDo: 現在ストレージの複数作成機能がフロントエンドにないので１つを前提にしている
+                Id:         id,
+                SocketPath: socksPath,
         }
 
         name, err := createDisk(toGetInfo.Disk)
@@ -261,7 +268,6 @@ func getAllVms(directoryPath string) ([]models.Vm, error) <span class="cov8" tit
 }
 
 func getVmInfo(opts InstallOpts, filePath string) (vmInfo models.Vm, err error) <span class="cov0" title="0">{
-        uuidObj, err := uuid.NewRandom()
         if err != nil </span><span class="cov0" title="0">{
                 return models.Vm{}, err
         }</span>
@@ -286,7 +292,7 @@ func getVmInfo(opts InstallOpts, filePath string) (vmInfo models.Vm, err error) 
                 Memory: opts.Memory,
                 Metadata: models.Metadata{
                         ApiVersion: "v1",
-                        Id:         uuidObj,
+                        Id:         opts.Id,
                 },
                 Name: opts.Name,
                 Cpu:  opts.VCpu,
