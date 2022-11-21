@@ -39,6 +39,12 @@ func init() {
 	if err != nil && errors.Is(err, fs.ErrNotExist) {
 		log.Fatal(err.Error())
 	}
+
+	socketsDirEnv := os.Getenv("SOCKETS_DIR")
+	_, err = os.ReadDir(socketsDirEnv)
+	if err != nil && errors.Is(err, fs.ErrNotExist) {
+		log.Fatal(err.Error())
+	}
 }
 
 func main() {
@@ -68,6 +74,7 @@ func main() {
 
 	opts := handler.ServerConfig{
 		StorageDir: os.Getenv("STORAGE_DIR"),
+		SocketsDir: os.Getenv("SOCKETS_DIR"),
 	}
 	v1Handler := handler.NewV1Handler(opts)
 
