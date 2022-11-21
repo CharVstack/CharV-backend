@@ -17,6 +17,7 @@ import (
 
 type ServerConfig struct {
 	StorageDir string
+	SocketsDir string
 }
 
 // V1Handler 引数を返さないので空
