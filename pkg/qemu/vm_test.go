@@ -5,7 +5,6 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/deepmap/oapi-codegen/pkg/types"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/CharVstack/CharV-backend/domain/models"
@@ -50,7 +49,7 @@ func TestGetAllVms(t *testing.T) {
 
 func TestGetVmPower(t *testing.T) {
 	type args struct {
-		id   types.UUID
+		id   uuid.UUID
 		path string
 	}
 	tests := []struct {

@@ -8,10 +8,8 @@ import (
 	"path/filepath"
 	"text/template"
 
-	"github.com/CharVstack/CharV-backend/pkg/util"
-	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
-
 	"github.com/CharVstack/CharV-backend/domain/models"
+	"github.com/CharVstack/CharV-backend/pkg/util"
 	"github.com/google/uuid"
 	"github.com/mattn/go-shellwords"
 )
@@ -183,7 +181,7 @@ func parse(path string) (models.Vm, error) {
 	return machine, nil
 }
 
-func GetVmPower(id openapi_types.UUID, path string) (models.VmPowerInfo, error) {
+func GetVmPower(id uuid.UUID, path string) (models.VmPowerInfo, error) {
 	// get all opened sockets
 	sockFiles, err := os.ReadDir(path)
 	if err != nil {

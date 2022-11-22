@@ -1,10 +1,10 @@
 package util
 
 import (
-	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
+	"github.com/google/uuid"
 )
 
-func SearchVmId(socks []string, x openapi_types.UUID) int {
+func SearchVmId(socks []string, x uuid.UUID) int {
 	for i, v := range socks {
 		if v == x.String() {
 			return i

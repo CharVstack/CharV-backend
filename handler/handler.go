@@ -4,6 +4,8 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/google/uuid"
+
 	"github.com/CharVstack/CharV-backend/pkg/qemu"
 	"github.com/CharVstack/CharV-backend/pkg/util"
 
@@ -93,7 +95,7 @@ func (v V1Handler) PatchApiV1VmsVmId(c *gin.Context, vmId openapi_types.UUID) {
 	return
 }
 
-func (v V1Handler) GetApiV1VmsVmIdPower(c *gin.Context, vmId openapi_types.UUID) {
+func (v V1Handler) GetApiV1VmsVmIdPower(c *gin.Context, vmId uuid.UUID) {
 	power, err := qemu.GetVmPower(vmId, v.Config.SocketsDir)
 	if err != nil {
 		middleware.GenericErrorHandler(c, err, http.StatusInternalServerError)
