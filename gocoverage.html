@@ -61,7 +61,7 @@
 				
 				<option value="file2">github.com/CharVstack/CharV-backend/pkg/qemu/disk.go (31.2%)</option>
 				
-				<option value="file3">github.com/CharVstack/CharV-backend/pkg/qemu/vm.go (20.7%)</option>
+				<option value="file3">github.com/CharVstack/CharV-backend/pkg/qemu/vm.go (29.3%)</option>
 				
 				</select>
 			</div>
@@ -187,6 +187,7 @@ import (
         "text/template"
 
         "github.com/CharVstack/CharV-backend/domain/models"
+        "github.com/CharVstack/CharV-backend/pkg/util"
         "github.com/google/uuid"
         "github.com/mattn/go-shellwords"
 )
@@ -362,6 +363,33 @@ func parse(path string) (models.Vm, error) <span class="cov8" title="1">{
                 return models.Vm{}, err
         }</span>
         <span class="cov8" title="1">return machine, nil</span>
+}
+
+func GetVmPower(id uuid.UUID, path string) (models.VmPowerInfo, error) <span class="cov8" title="1">{
+        // get all opened sockets
+        sockFiles, err := os.ReadDir(path)
+        if err != nil </span><span class="cov8" title="1">{
+                return models.VmPowerInfo{}, err
+        }</span>
+        <span class="cov8" title="1">var socks []string
+        for _, v := range sockFiles </span><span class="cov8" title="1">{
+                socks = append(socks, v.Name()[:36])
+        }</span>
+
+        // try finding the target id
+        <span class="cov8" title="1">i := util.SearchVmId(socks, id)
+        if i != -1 </span><span class="cov8" title="1">{ // found
+                return models.VmPowerInfo{
+                        CleanPowerOff: true,
+                        State:         "RUNNING",
+                }, nil
+        }</span>
+
+        // not found
+        <span class="cov8" title="1">return models.VmPowerInfo{
+                CleanPowerOff: true,
+                State:         "SHUTDOWN",
+        }, nil</span>
 }
 </pre>
 		
