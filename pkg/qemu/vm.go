@@ -9,6 +9,7 @@ import (
 	"text/template"
 
 	"github.com/CharVstack/CharV-backend/domain/models"
+	"github.com/CharVstack/CharV-backend/pkg/util"
 	"github.com/google/uuid"
 	"github.com/mattn/go-shellwords"
 )
@@ -184,4 +185,31 @@ func parse(path string) (models.Vm, error) {
 		return models.Vm{}, err
 	}
 	return machine, nil
+}
+
+func GetVmPower(id uuid.UUID, path string) (models.VmPowerInfo, error) {
+	// get all opened sockets
+	sockFiles, err := os.ReadDir(path)
+	if err != nil {
+		return models.VmPowerInfo{}, err
+	}
+	var socks []string
+	for _, v := range sockFiles {
+		socks = append(socks, v.Name()[:36])
+	}
+
+	// try finding the target id
+	i := util.SearchVmId(socks, id)
+	if i != -1 { // found
+		return models.VmPowerInfo{
+			CleanPowerOff: true,
+			State:         "RUNNING",
+		}, nil
+	}
+
+	// not found
+	return models.VmPowerInfo{
+		CleanPowerOff: true,
+		State:         "SHUTDOWN",
+	}, nil
 }
