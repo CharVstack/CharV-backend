@@ -3,6 +3,8 @@ package qemu
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -212,4 +214,31 @@ func GetVmPower(id uuid.UUID, path string) (models.VmPowerInfo, error) {
 		CleanPowerOff: true,
 		State:         "SHUTDOWN",
 	}, nil
+}
+
+func UpdateVmPower(id uuid.UUID, action models.PostApiV1VmsVmIdPowerActionParamsAction, sockPath string) {
+	switch action {
+	case "start":
+		fmt.Println("start")
+	case "stop":
+		stopVmPower(&id, &sockPath)
+	}
+}
+
+func stopVmPower(id *uuid.UUID, sockPath *string) {
+	// socketのpath文字列を作成
+	file := *sockPath + "/" + id.String() + ".sock"
+	fmt.Println(file)
+
+	//socketコネクト
+	conn, err := net.Dial("unix", file)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	//socketにwrite
+	_, err = conn.Write([]byte("system_powerdown"))
+	if err != nil {
+		fmt.Println(err)
+	}
 }
