@@ -61,7 +61,7 @@
 				
 				<option value="file2">github.com/CharVstack/CharV-backend/pkg/qemu/disk.go (31.2%)</option>
 				
-				<option value="file3">github.com/CharVstack/CharV-backend/pkg/qemu/vm.go (29.3%)</option>
+				<option value="file3">github.com/CharVstack/CharV-backend/pkg/qemu/vm.go (22.0%)</option>
 				
 				</select>
 			</div>
@@ -181,10 +181,15 @@ func CheckFileType(filePath string) (models.DiskType, error) <span class="cov8" 
 import (
         "bytes"
         "encoding/json"
+        "errors"
+        "fmt"
         "os"
         "os/exec"
         "path/filepath"
         "text/template"
+        "time"
+
+        "github.com/digitalocean/go-qemu/qmp"
 
         "github.com/CharVstack/CharV-backend/domain/models"
         "github.com/CharVstack/CharV-backend/pkg/util"
@@ -193,7 +198,7 @@ import (
 )
 
 func install(opts InstallOpts, filePath string) (models.Vm, error) <span class="cov0" title="0">{
-        tmpl, err := template.New("install").Parse(`qemu-system-x86_64 -accel kvm -daemonize -display none -name guest={{.Name}} -smp {{.VCpu}} -m {{.Memory}} -cdrom /var/lib/charVstack/iso/{{.Image}} -boot order=d -drive file=/var/lib/charVstack/images/{{.Disk}}.qcow2,format=qcow2 -drive file=/var/lib/charVstack/bios/bios.bin,format=raw,if=pflash,readonly=on -monitor unix:/{{.SocketPath}}/{{.Id}}.sock,server,nowait`)
+        tmpl, err := template.New("install").Parse(`qemu-system-x86_64 -accel kvm -daemonize -display none -name guest={{.Name}} -smp {{.VCpu}} -m {{.Memory}} -cdrom /var/lib/charVstack/iso/{{.Image}} -boot order=d -drive file=/var/lib/charVstack/images/{{.Disk}}.qcow2,format=qcow2 -drive file=/var/lib/charVstack/bios/bios.bin,format=raw,if=pflash,readonly=on -qmp unix:/{{.SocketPath}}/{{.Id}}.sock,server,nowait`)
         if err != nil </span><span class="cov0" title="0">{
                 return models.Vm{}, err
         }</span>
@@ -203,6 +208,7 @@ func install(opts InstallOpts, filePath string) (models.Vm, error) <span class="
                 return models.Vm{}, err
         }</span>
         <span class="cov0" title="0">cmd := buf.String()
+        fmt.Println(cmd)
 
         vm, err := getVmInfo(opts, filePath)
         if err != nil </span><span class="cov0" title="0">{
@@ -390,6 +396,59 @@ func GetVmPower(id uuid.UUID, path string) (models.VmPowerInfo, error) <span cla
                 CleanPowerOff: true,
                 State:         "SHUTDOWN",
         }, nil</span>
+}
+
+func HandleChangeVmPower(id uuid.UUID, action models.PostApiV1VmsVmIdPowerActionParamsAction, sockPath string) error <span class="cov0" title="0">{
+        switch action </span>{
+        case "start":<span class="cov0" title="0">
+                fmt.Println("start")
+                return nil</span>
+        case "shutdown":<span class="cov0" title="0">
+                err := changeVmPower(&amp;id, &amp;sockPath, "system_powerdown")
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+        case "reset":<span class="cov0" title="0">
+                err := changeVmPower(&amp;id, &amp;sockPath, "system_reset")
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+        case "reboot":<span class="cov0" title="0">
+                fmt.Println("reboot")
+                return nil</span>
+        default:<span class="cov0" title="0">
+                return errors.New("there is an error in the query parameter")</span>
+        }
+        <span class="cov0" title="0">return nil</span>
+}
+
+func changeVmPower(id *uuid.UUID, sockPath *string, action models.PostApiV1VmsVmIdPowerActionParamsAction) error <span class="cov0" title="0">{
+        file := *sockPath + "/" + id.String() + ".sock"
+
+        sock, err := qmp.NewSocketMonitor("unix", file, 2*time.Second)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov0" title="0">err = sock.Connect()
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov0" title="0">defer sock.Disconnect()
+
+        cmd := []byte(`{ "execute": "` + action + `" }`)
+        _, err = sock.Run(cmd)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov0" title="0">cmd = []byte(`{ "execute": "quit" }`)
+        _, err = sock.Run(cmd)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov0" title="0">return nil</span>
 }
 </pre>
 		
