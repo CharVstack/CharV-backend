@@ -3,12 +3,15 @@ package qemu
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"text/template"
+	"time"
+
+	"github.com/digitalocean/go-qemu/qmp"
 
 	"github.com/CharVstack/CharV-backend/domain/models"
 	"github.com/CharVstack/CharV-backend/pkg/util"
@@ -17,7 +20,7 @@ import (
 )
 
 func install(opts InstallOpts, filePath string) (models.Vm, error) {
-	tmpl, err := template.New("install").Parse(`qemu-system-x86_64 -accel kvm -daemonize -display none -name guest={{.Name}} -smp {{.VCpu}} -m {{.Memory}} -cdrom /var/lib/charVstack/iso/{{.Image}} -boot order=d -drive file=/var/lib/charVstack/images/{{.Disk}}.qcow2,format=qcow2 -drive file=/var/lib/charVstack/bios/bios.bin,format=raw,if=pflash,readonly=on -monitor unix:/{{.SocketPath}}/{{.Id}}.sock,server,nowait`)
+	tmpl, err := template.New("install").Parse(`qemu-system-x86_64 -accel kvm -daemonize -display none -name guest={{.Name}} -smp {{.VCpu}} -m {{.Memory}} -cdrom /var/lib/charVstack/iso/{{.Image}} -boot order=d -drive file=/var/lib/charVstack/images/{{.Disk}}.qcow2,format=qcow2 -drive file=/var/lib/charVstack/bios/bios.bin,format=raw,if=pflash,readonly=on -qmp unix:/{{.SocketPath}}/{{.Id}}.sock,server,nowait -vnc :0`)
 	if err != nil {
 		return models.Vm{}, err
 	}
@@ -27,6 +30,7 @@ func install(opts InstallOpts, filePath string) (models.Vm, error) {
 		return models.Vm{}, err
 	}
 	cmd := buf.String()
+	fmt.Println(cmd)
 
 	vm, err := getVmInfo(opts, filePath)
 	if err != nil {
@@ -216,29 +220,55 @@ func GetVmPower(id uuid.UUID, path string) (models.VmPowerInfo, error) {
 	}, nil
 }
 
-func UpdateVmPower(id uuid.UUID, action models.PostApiV1VmsVmIdPowerActionParamsAction, sockPath string) {
+func HandleChangeVmPower(id uuid.UUID, action models.PostApiV1VmsVmIdPowerActionParamsAction, sockPath string) error {
 	switch action {
 	case "start":
 		fmt.Println("start")
-	case "stop":
-		stopVmPower(&id, &sockPath)
+		return nil
+	case "shutdown":
+		err := changeVmPower(&id, &sockPath, "system_powerdown")
+		if err != nil {
+			return err
+		}
+	case "reset":
+		err := changeVmPower(&id, &sockPath, "system_reset")
+		if err != nil {
+			return err
+		}
+	case "reboot":
+		fmt.Println("reboot")
+		return nil
+	default:
+		return errors.New("there is an error in the query parameter")
 	}
+	return nil
 }
 
-func stopVmPower(id *uuid.UUID, sockPath *string) {
-	// socketのpath文字列を作成
+func changeVmPower(id *uuid.UUID, sockPath *string, action models.PostApiV1VmsVmIdPowerActionParamsAction) error {
 	file := *sockPath + "/" + id.String() + ".sock"
-	fmt.Println(file)
 
-	//socketコネクト
-	conn, err := net.Dial("unix", file)
+	sock, err := qmp.NewSocketMonitor("unix", file, 2*time.Second)
 	if err != nil {
-		fmt.Println(err)
+		return err
 	}
 
-	//socketにwrite
-	_, err = conn.Write([]byte("system_powerdown"))
+	err = sock.Connect()
 	if err != nil {
-		fmt.Println(err)
+		return err
 	}
+
+	defer sock.Disconnect()
+
+	cmd := []byte(`{ "execute": "` + action + `" }`)
+	_, err = sock.Run(cmd)
+	if err != nil {
+		return err
+	}
+
+	cmd = []byte(`{ "execute": "quit" }`)
+	_, err = sock.Run(cmd)
+	if err != nil {
+		return err
+	}
+	return nil
 }
