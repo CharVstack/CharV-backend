@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/deepmap/oapi-codegen v1.12.2
 	github.com/digitalocean/go-qemu v0.0.0-20220826173844-d5f5e3ceed89
-	github.com/getkin/kin-openapi v0.107.0
+	github.com/getkin/kin-openapi v0.110.0
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.8.1
 	github.com/google/uuid v1.3.0
