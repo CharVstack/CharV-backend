@@ -1,6 +1,6 @@
 module github.com/CharVstack/CharV-backend
 
-go 1.18
+go 1.19
 
 require (
 	github.com/deepmap/oapi-codegen v1.12.2
