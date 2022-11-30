@@ -226,12 +226,12 @@ func HandleChangeVmPower(id uuid.UUID, action models.PostApiV1VmsVmIdPowerAction
 		err := startVmPower(&id, sockPath)
 		return err
 	case "shutdown":
-		err := changeVmPower(&id, &sockPath, "system_powerdown")
+		err := downVmPower(&id, &sockPath, "system_powerdown")
 		if err != nil {
 			return err
 		}
 	case "reset":
-		err := changeVmPower(&id, &sockPath, "system_reset")
+		err := downVmPower(&id, &sockPath, "system_reset")
 		if err != nil {
 			return err
 		}
@@ -244,7 +244,7 @@ func HandleChangeVmPower(id uuid.UUID, action models.PostApiV1VmsVmIdPowerAction
 	return nil
 }
 
-func changeVmPower(id *uuid.UUID, sockPath *string, action models.PostApiV1VmsVmIdPowerActionParamsAction) error {
+func downVmPower(id *uuid.UUID, sockPath *string, action models.PostApiV1VmsVmIdPowerActionParamsAction) error {
 	file := *sockPath + "/" + id.String() + ".sock"
 
 	sock, err := qmp.NewSocketMonitor("unix", file, 2*time.Second)
