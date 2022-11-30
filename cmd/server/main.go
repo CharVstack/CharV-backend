@@ -23,6 +23,7 @@ import (
 	"github.com/CharVstack/CharV-backend/adapters"
 	"github.com/CharVstack/CharV-backend/handler"
 	"github.com/CharVstack/CharV-backend/middleware"
+	oapiMiddleware "github.com/deepmap/oapi-codegen/pkg/gin-middleware"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -51,6 +52,15 @@ func main() {
 	r := gin.New()
 
 	logger := rz.New(rz.Fields(rz.String("version", fmt.Sprintf("v%s-%s", charvbackend.VERSION, charvbackend.REVISION))))
+
+	swagger, err := adapters.GetSwagger()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	validatorOpts := oapiMiddleware.Options{
+		ErrorHandler: middleware.ValidationErrorHandler,
+	}
+	r.Use(oapiMiddleware.OapiRequestValidatorWithOptions(swagger, &validatorOpts))
 
 	r.Use(gin.Recovery())
 
