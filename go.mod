@@ -3,7 +3,7 @@ module github.com/CharVstack/CharV-backend
 go 1.19
 
 require (
-	github.com/deepmap/oapi-codegen v1.12.2
+	github.com/deepmap/oapi-codegen v1.12.3
 	github.com/digitalocean/go-qemu v0.0.0-20220826173844-d5f5e3ceed89
 	github.com/getkin/kin-openapi v0.107.0
 	github.com/gin-contrib/cors v1.4.0
