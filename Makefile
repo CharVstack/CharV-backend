@@ -17,6 +17,8 @@ GO_LDFLAGS:=$(GO_LDFLAGS_VERSION)
 # go build
 GO_BUILD:=-ldflags "$(GO_LDFLAGS)"
 
+GOFLAGS:="-tags=develop"
+
 .PHONY: help fmt lint test build coverage
 
 help:
@@ -61,7 +63,7 @@ dev: tools # Run Development Server
 build: $(BINARIES) ## Build Server Binary
 
 $(BINARIES): $(GO_FILES) VERSION .git/HEAD
-	@go build -o $@ $(GO_BUILD) $(@:$(BINDIR)/%=$(ROOT_PACKAGE)/cmd/%)
+	@go build $(GOFLAGS) -o $@ $(GO_BUILD) $(@:$(BINDIR)/%=$(ROOT_PACKAGE)/cmd/%)
 
 coverage: testassets tools # Generate Coverage
 	go test -cover -coverprofile=coverage.out ./...

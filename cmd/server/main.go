@@ -11,15 +11,14 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"io/fs"
+	"log"
 	"os"
 	"time"
 
-	"github.com/skerkour/rz"
-	"github.com/skerkour/rz/log"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 
-	charvbackend "github.com/CharVstack/CharV-backend"
 	"github.com/CharVstack/CharV-backend/adapters"
 	"github.com/CharVstack/CharV-backend/handler"
 	"github.com/CharVstack/CharV-backend/middleware"
@@ -27,6 +26,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
+
+var production bool
 
 func init() {
 	err := godotenv.Load("./.env")
@@ -48,9 +49,29 @@ func init() {
 }
 
 func main() {
-	r := gin.New()
+	var logger *zap.Logger
+	if production {
+		var err error
 
-	logger := rz.New(rz.Fields(rz.String("version", fmt.Sprintf("v%s-%s", charvbackend.VERSION, charvbackend.REVISION))))
+		config := zap.NewProductionConfig()
+		config.Encoding = "console"
+		config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+
+		logger, err = config.Build()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		gin.SetMode(gin.ReleaseMode)
+	} else {
+		var err error
+		logger, err = zap.NewDevelopmentConfig().Build()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	r := gin.New()
 
 	r.Use(gin.Recovery())
 
