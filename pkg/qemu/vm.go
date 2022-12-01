@@ -163,6 +163,7 @@ func GetAllVmInfo() ([]models.Vm, error) {
 
 func run(cmd string) error {
 	c, err := shellwords.Parse(cmd)
+	var stdErr bytes.Buffer
 	if err != nil {
 		return err
 	}
@@ -170,9 +171,17 @@ func run(cmd string) error {
 	case 0:
 		return nil
 	case 1:
-		err = exec.Command(c[0]).Run()
+		command := exec.Command(c[0])
+		command.Stderr = &stdErr
+		if command.Run() != nil {
+			err = errors.New(stdErr.String())
+		}
 	default:
-		err = exec.Command(c[0], c[1:]...).Run()
+		command := exec.Command(c[0], c[1:]...)
+		command.Stderr = &stdErr
+		if command.Run() != nil {
+			err = errors.New(stdErr.String())
+		}
 	}
 	if err != nil {
 		return err
