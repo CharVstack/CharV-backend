@@ -1,4 +1,4 @@
-name: main action
+name: Deploy Development
 on:
   push:
     branches:
@@ -7,8 +7,21 @@ on:
 jobs:
   deploy:
     runs-on: self-hosted
+    environment:
+      name: development
 
     steps:
-      - name: update repo
-        run : ssh development@${{ secret.development_server_ip }} CD/init.sh
+      - uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: ./go.mod
+          cache: true
+      - name: Build
+        run: make build
 
+      - name: Upload Binary
+        run : scp bin ${{ secret.development_server_user }}@${{ secret.development_server_ip }}:~/CharV-backend/
+
+      - name: Start Server
+        run : ssh ${{ secret.development_server_user }}@${{ secret.development_server_ip }} ~/CharV-backend/bin/server
