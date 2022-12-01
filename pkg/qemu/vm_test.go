@@ -102,3 +102,34 @@ func TestGetVmPower(t *testing.T) {
 		})
 	}
 }
+
+func Test_run(t *testing.T) {
+	type args struct {
+		cmd string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr assert.ErrorAssertionFunc
+	}{
+		{
+			name: "pass01",
+			args: args{
+				cmd: "ls",
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "fail01",
+			args: args{
+				cmd: "Non-Existent-Command",
+			},
+			wantErr: assert.Error,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.wantErr(t, run(tt.args.cmd), fmt.Sprintf("run(%v)", tt.args.cmd))
+		})
+	}
+}
