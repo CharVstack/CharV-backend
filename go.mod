@@ -12,8 +12,8 @@ require (
 	github.com/joho/godotenv v1.4.0
 	github.com/mattn/go-shellwords v1.0.12
 	github.com/shirou/gopsutil/v3 v3.22.10
-	github.com/skerkour/rz v1.0.1
 	github.com/stretchr/testify v1.8.1
+	go.uber.org/zap v1.23.0
 )
 
 require (
@@ -46,6 +46,8 @@ require (
 	github.com/tklauser/numcpus v0.5.0 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
+	go.uber.org/atomic v1.7.0 // indirect
+	go.uber.org/multierr v1.6.0 // indirect
 	golang.org/x/crypto v0.1.0 // indirect
 	golang.org/x/net v0.1.0 // indirect
 	golang.org/x/sys v0.1.0 // indirect
