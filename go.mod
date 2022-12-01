@@ -12,7 +12,7 @@ require (
 	github.com/joho/godotenv v1.4.0
 	github.com/mattn/go-shellwords v1.0.12
 	github.com/shirou/gopsutil/v3 v3.22.10
-	github.com/skerkour/rz v1.0.1
+	github.com/skerkour/rz v1.3.2
 	github.com/stretchr/testify v1.8.1
 )
 
