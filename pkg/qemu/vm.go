@@ -20,7 +20,7 @@ import (
 )
 
 func install(opts InstallOpts, filePath string) (models.Vm, error) {
-	tmpl, err := template.New("install").Parse(`qemu-system-x86_64 -accel kvm -daemonize -display none -name guest={{.Name}} -smp {{.VCpu}} -m {{.Memory}} -cdrom /var/lib/charVstack/iso/{{.Image}} -boot order=d -drive file=/var/lib/charVstack/images/{{.Disk}}.qcow2,format=qcow2 -drive file=/var/lib/charVstack/bios/bios.bin,format=raw,if=pflash,readonly=on -qmp unix:/{{.SocketPath}}/{{.Id}}.sock,server,nowait`)
+	tmpl, err := template.New("install").Parse(`qemu-system-x86_64 -accel kvm -daemonize -display none -name guest={{.Name}} -smp {{.VCpu}} -m {{.Memory}} -cdrom /var/lib/charVstack/iso/{{.Image}} -boot order=d -drive file=/var/lib/charVstack/images/{{.Disk}}.qcow2,format=qcow2 -drive file=/var/lib/charVstack/bios/bios.bin,format=raw,if=pflash,readonly=on -qmp unix:/{{.SocketPath}}/{{.Id}}.sock,server,nowait -vnc :0`)
 	if err != nil {
 		return models.Vm{}, err
 	}
@@ -223,15 +223,15 @@ func GetVmPower(id uuid.UUID, path string) (models.VmPowerInfo, error) {
 func HandleChangeVmPower(id uuid.UUID, action models.PostApiV1VmsVmIdPowerActionParamsAction, sockPath string) error {
 	switch action {
 	case "start":
-		fmt.Println("start")
-		return nil
+		err := startVmPower(id, sockPath)
+		return err
 	case "shutdown":
-		err := changeVmPower(&id, &sockPath, "system_powerdown")
+		err := downVmPower(id, &sockPath, "system_powerdown")
 		if err != nil {
 			return err
 		}
 	case "reset":
-		err := changeVmPower(&id, &sockPath, "system_reset")
+		err := downVmPower(id, &sockPath, "system_reset")
 		if err != nil {
 			return err
 		}
@@ -244,7 +244,7 @@ func HandleChangeVmPower(id uuid.UUID, action models.PostApiV1VmsVmIdPowerAction
 	return nil
 }
 
-func changeVmPower(id *uuid.UUID, sockPath *string, action models.PostApiV1VmsVmIdPowerActionParamsAction) error {
+func downVmPower(id uuid.UUID, sockPath *string, action models.PostApiV1VmsVmIdPowerActionParamsAction) error {
 	file := *sockPath + "/" + id.String() + ".sock"
 
 	sock, err := qmp.NewSocketMonitor("unix", file, 2*time.Second)
@@ -267,6 +267,49 @@ func changeVmPower(id *uuid.UUID, sockPath *string, action models.PostApiV1VmsVm
 
 	cmd = []byte(`{ "execute": "quit" }`)
 	_, err = sock.Run(cmd)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func startVmPower(id uuid.UUID, sockPath string) error {
+	var vm models.Vm
+
+	file, err := filepath.Glob(filepath.Join("/var/lib/charVstack/machines/", "*"+id.String()+".json"))
+	if err != nil {
+		return err
+	}
+
+	if len(file) > 1 {
+		return errors.New("some files have uuid conflicts")
+	}
+
+	info, err := os.ReadFile(file[0])
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(info, &vm)
+	if err != nil {
+		return err
+	}
+
+	StartOpts := InstallOpts{
+		Name:       vm.Name,
+		Memory:     vm.Memory,
+		VCpu:       vm.Cpu,
+		Disk:       vm.Name + "Disk", // ToDo: 現在ストレージの複数作成機能がフロントエンドにないので１つを前提にしている
+		Id:         id,
+		SocketPath: sockPath,
+	}
+
+	tmpl, _ := template.New("install").Parse(`qemu-system-x86_64 -accel kvm -daemonize -display none -name guest={{.Name}} -smp {{.VCpu}} -m {{.Memory}} -drive file=/var/lib/charVstack/images/{{.Disk}}.qcow2,format=qcow2 -drive file=/var/lib/charVstack/bios/bios.bin,format=raw,if=pflash,readonly=on -qmp unix:/{{.SocketPath}}/{{.Id}}.sock,server,nowait`)
+	var buf bytes.Buffer
+	tmpl.Execute(&buf, StartOpts)
+	cmd := buf.String()
+
+	err = run(cmd)
 	if err != nil {
 		return err
 	}
