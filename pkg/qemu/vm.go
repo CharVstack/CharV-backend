@@ -223,15 +223,15 @@ func GetVmPower(id uuid.UUID, path string) (models.VmPowerInfo, error) {
 func HandleChangeVmPower(id uuid.UUID, action models.PostApiV1VmsVmIdPowerActionParamsAction, sockPath string) error {
 	switch action {
 	case "start":
-		err := startVmPower(&id, sockPath)
+		err := startVmPower(id, sockPath)
 		return err
 	case "shutdown":
-		err := downVmPower(&id, &sockPath, "system_powerdown")
+		err := downVmPower(id, &sockPath, "system_powerdown")
 		if err != nil {
 			return err
 		}
 	case "reset":
-		err := downVmPower(&id, &sockPath, "system_reset")
+		err := downVmPower(id, &sockPath, "system_reset")
 		if err != nil {
 			return err
 		}
@@ -244,7 +244,7 @@ func HandleChangeVmPower(id uuid.UUID, action models.PostApiV1VmsVmIdPowerAction
 	return nil
 }
 
-func downVmPower(id *uuid.UUID, sockPath *string, action models.PostApiV1VmsVmIdPowerActionParamsAction) error {
+func downVmPower(id uuid.UUID, sockPath *string, action models.PostApiV1VmsVmIdPowerActionParamsAction) error {
 	file := *sockPath + "/" + id.String() + ".sock"
 
 	sock, err := qmp.NewSocketMonitor("unix", file, 2*time.Second)
@@ -273,7 +273,7 @@ func downVmPower(id *uuid.UUID, sockPath *string, action models.PostApiV1VmsVmId
 	return nil
 }
 
-func startVmPower(id *uuid.UUID, sockPath string) error {
+func startVmPower(id uuid.UUID, sockPath string) error {
 	var vm models.Vm
 
 	file, err := filepath.Glob(filepath.Join("/var/lib/charVstack/machines/", "*"+id.String()+".json"))
@@ -300,7 +300,7 @@ func startVmPower(id *uuid.UUID, sockPath string) error {
 		Memory:     vm.Memory,
 		VCpu:       vm.Cpu,
 		Disk:       vm.Name + "Disk", // ToDo: 現在ストレージの複数作成機能がフロントエンドにないので１つを前提にしている
-		Id:         *id,
+		Id:         id,
 		SocketPath: sockPath,
 	}
 
