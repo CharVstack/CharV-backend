@@ -20,8 +20,8 @@ jobs:
       - name: Build
         run: make build
 
-      - name: Upload Binary
-        run : scp bin ${{ secret.development_server_user }}@${{ secret.development_server_ip }}:~/CharV-backend/
+      - name: Set up Environment
+        run : ssh ${{ secret.development_server_user }}@${{ secret.development_server_ip }} ~/CharV-backend/init.sh
 
-      - name: Start Server
-        run : ssh ${{ secret.development_server_user }}@${{ secret.development_server_ip }} ~/CharV-backend/bin/server
+      - name: Restart Server
+        run : ssh ${{ secret.development_server_user }}@${{ secret.development_server_ip }} systemctl restart charv@backend.service
