@@ -11,6 +11,7 @@ package main
 
 import (
 	"errors"
+	"flag"
 	"io/fs"
 	"log"
 	"os"
@@ -31,7 +32,12 @@ import (
 var production bool
 
 func init() {
-	err := godotenv.Load("./.env")
+	var (
+		configPath = flag.String("c", "/etc/charv/backend.conf", "backend config file path")
+	)
+	flag.Parse()
+
+	err := godotenv.Load(*configPath)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
