@@ -1,6 +1,8 @@
 package qemu
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+)
 
 type InstallOpts struct {
 	Name       string
@@ -14,4 +16,9 @@ type InstallOpts struct {
 
 type StartOpts struct {
 	Disk string
+}
+
+type ErrorWithStatus struct {
+	error
+	Code int //http status code
 }

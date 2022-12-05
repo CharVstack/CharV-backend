@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -246,7 +247,9 @@ func HandleChangeVmPower(id uuid.UUID, action models.PostApiV1VmsVmIdPowerAction
 		}
 	case "reboot":
 		err := rebootVmPower(id, sockPath)
-		return err
+		if err != nil {
+			return err.(ErrorWithStatus)
+		}
 	default:
 		return errors.New("there is an error in the query parameter")
 	}
@@ -350,5 +353,5 @@ func rebootVmPower(id uuid.UUID, sockPath string) error {
 		}
 		time.Sleep(time.Second * 5)
 	}
-	return errors.New("reboot request timed out")
+	return ErrorWithStatus{error: errors.New("reboot request timed out"), Code: http.StatusRequestTimeout}
 }
