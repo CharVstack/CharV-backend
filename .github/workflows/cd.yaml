@@ -23,7 +23,7 @@ jobs:
           cp ./bin/server ~/CharV-backend/charv-backend
 
       - name: Set up environment
-        run : ssh ${{ secrets.DEVELOPMENT_SERVER_USER }}@${{ secrets.DEVELOPMENT_SERVER_IP }} ~/CharV-backend/init.sh
+        run : ~/CharV-backend/init.sh
 
       - name: Restart server
         run : ssh ${{ secrets.DEVELOPMENT_SERVER_USER }}@${{ secrets.DEVELOPMENT_SERVER_IP }} systemctl restart charv@backend.service
