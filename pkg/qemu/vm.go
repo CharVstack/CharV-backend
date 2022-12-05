@@ -21,7 +21,7 @@ import (
 )
 
 func install(opts InstallOpts, filePath string) (models.Vm, error) {
-	tmpl, err := template.New("install").Parse(`qemu-system-x86_64 -accel kvm -daemonize -display none -name guest={{.Name}} -smp {{.VCpu}} -m {{.Memory}} -cdrom /var/lib/charVstack/iso/{{.Image}} -boot order=d -drive file=/var/lib/charVstack/images/{{.Disk}}.qcow2,format=qcow2 -drive file=/var/lib/charVstack/bios/bios.bin,format=raw,if=pflash,readonly=on -qmp unix:/{{.SocketPath}}/{{.Id}}.sock,server,nowait -vnc :0`)
+	tmpl, err := template.New("install").Parse(`qemu-system-x86_64 -accel kvm -daemonize -display none -name guest={{.Name}} -smp {{.VCpu}} -m {{.Memory}} -cdrom /var/lib/charVstack/iso/{{.Image}} -boot order=d -drive file=/var/lib/charVstack/images/{{.Disk}}.qcow2,format=qcow2 -drive file=/var/lib/charVstack/bios/bios.bin,format=raw,if=pflash,readonly=on -qmp unix:/{{.SocketPath}}/{{.Id}}.sock,server,nowait`)
 	if err != nil {
 		return models.Vm{}, err
 	}
@@ -316,7 +316,7 @@ func startVmPower(id uuid.UUID, sockPath string) error {
 		SocketPath: sockPath,
 	}
 
-	tmpl, _ := template.New("install").Parse(`qemu-system-x86_64 -accel kvm -daemonize -display none -name guest={{.Name}} -smp {{.VCpu}} -m {{.Memory}} -drive file=/var/lib/charVstack/images/{{.Disk}}.qcow2,format=qcow2 -drive file=/var/lib/charVstack/bios/bios.bin,format=raw,if=pflash,readonly=on -qmp unix:/{{.SocketPath}}/{{.Id}}.sock,server,nowait -vnc :0`)
+	tmpl, _ := template.New("install").Parse(`qemu-system-x86_64 -accel kvm -daemonize -display none -name guest={{.Name}} -smp {{.VCpu}} -m {{.Memory}} -drive file=/var/lib/charVstack/images/{{.Disk}}.qcow2,format=qcow2 -drive file=/var/lib/charVstack/bios/bios.bin,format=raw,if=pflash,readonly=on -qmp unix:/{{.SocketPath}}/{{.Id}}.sock,server,nowait`)
 	var buf bytes.Buffer
 	tmpl.Execute(&buf, StartOpts)
 	cmd := buf.String()
