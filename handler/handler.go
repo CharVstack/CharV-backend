@@ -110,8 +110,11 @@ func (v V1Handler) GetApiV1VmsVmIdPower(c *gin.Context, vmId uuid.UUID) {
 func (v V1Handler) PostApiV1VmsVmIdPowerAction(c *gin.Context, vmId openapi_types.UUID, params models.PostApiV1VmsVmIdPowerActionParams) {
 	err := qemu.HandleChangeVmPower(vmId, *params.Action, v.Config.SocketsDir)
 	if err != nil {
-		middleware.GenericErrorHandler(c, err, http.StatusInternalServerError)
-		return
+		errWithStatus, ok := err.(qemu.ErrorWithStatus)
+		if ok {
+			middleware.GenericErrorHandler(c, err, errWithStatus.Code)
+			return
+		}
 	}
 	c.Status(http.StatusOK)
 }
