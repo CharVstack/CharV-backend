@@ -17,7 +17,7 @@ GO_LDFLAGS:=$(GO_LDFLAGS_VERSION)
 # go build
 GO_BUILD:=-ldflags "$(GO_LDFLAGS)"
 
-GOFLAGS:="-tags=develop"
+GOFLAGS:=-tags=develop
 
 .PHONY: help fmt lint test build coverage
 
