@@ -24,8 +24,8 @@ jobs:
           make build
           cp ./bin/server ~/CharV-backend/charv-backend
 
-      - name: Set up environment
-        run : ~/CharV-backend/init.sh
+      - name: Upload binary
+        run : rsync -e ssh /home/charv/CharV-backend/charv-backend ${{ secrets.DEPLOYMENT_USER }}@${{ secrets.DEPLOYMENT_SERVER }}:/usr/local/bin/charv-backend
 
       - name: Restart server
         run : ssh ${{ secrets.DEPLOYMENT_USER }}@${{ secrets.DEPLOYMENT_SERVER }} systemctl restart charv@backend.service
