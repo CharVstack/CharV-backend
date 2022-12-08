@@ -31,12 +31,12 @@ const (
 	UNKNOWN  VmPowerInfoState = "UNKNOWN"
 )
 
-// Defines values for PostApiV1VmsVmIdPowerActionParamsAction.
+// Defines values for PostApiV1VmsVmIdPowerJSONBodyAction.
 const (
-	Reboot   PostApiV1VmsVmIdPowerActionParamsAction = "reboot"
-	Reset    PostApiV1VmsVmIdPowerActionParamsAction = "reset"
-	Shutdown PostApiV1VmsVmIdPowerActionParamsAction = "shutdown"
-	Start    PostApiV1VmsVmIdPowerActionParamsAction = "start"
+	Reboot   PostApiV1VmsVmIdPowerJSONBodyAction = "reboot"
+	Reset    PostApiV1VmsVmIdPowerJSONBodyAction = "reset"
+	Shutdown PostApiV1VmsVmIdPowerJSONBodyAction = "shutdown"
+	Start    PostApiV1VmsVmIdPowerJSONBodyAction = "start"
 )
 
 // Cpu ホストのCPU情報
@@ -158,6 +158,11 @@ type PatchUpdateVMRequest struct {
 	Name   string `json:"name"`
 }
 
+// PostChangeVMsPowerStatusByVMIdRequest defines model for PostChangeVMsPowerStatusByVMIdRequest.
+type PostChangeVMsPowerStatusByVMIdRequest struct {
+	Action PostChangeVMsPowerStatusByVMIdRequestAction `json:"action"`
+}
+
 // PostCreateNewVMRequest defines model for PostCreateNewVMRequest.
 type PostCreateNewVMRequest struct {
 	Cpu    int    `json:"cpu"`
@@ -179,16 +184,19 @@ type PatchApiV1VmsVmIdJSONBody struct {
 	Name   *string `json:"name,omitempty"`
 }
 
-// PostApiV1VmsVmIdPowerActionParams defines parameters for PostApiV1VmsVmIdPowerAction.
-type PostApiV1VmsVmIdPowerActionParams struct {
-	Action *PostApiV1VmsVmIdPowerActionParamsAction `form:"action,omitempty" json:"action,omitempty"`
+// PostApiV1VmsVmIdPowerJSONBody defines parameters for PostApiV1VmsVmIdPower.
+type PostApiV1VmsVmIdPowerJSONBody struct {
+	Action PostApiV1VmsVmIdPowerJSONBodyAction `json:"action"`
 }
 
-// PostApiV1VmsVmIdPowerActionParamsAction defines parameters for PostApiV1VmsVmIdPowerAction.
-type PostApiV1VmsVmIdPowerActionParamsAction string
+// PostApiV1VmsVmIdPowerJSONBodyAction defines parameters for PostApiV1VmsVmIdPower.
+type PostApiV1VmsVmIdPowerJSONBodyAction string
 
 // PostApiV1VmsJSONRequestBody defines body for PostApiV1Vms for application/json ContentType.
 type PostApiV1VmsJSONRequestBody PostApiV1VmsJSONBody
 
 // PatchApiV1VmsVmIdJSONRequestBody defines body for PatchApiV1VmsVmId for application/json ContentType.
 type PatchApiV1VmsVmIdJSONRequestBody PatchApiV1VmsVmIdJSONBody
+
+// PostApiV1VmsVmIdPowerJSONRequestBody defines body for PostApiV1VmsVmIdPower for application/json ContentType.
+type PostApiV1VmsVmIdPowerJSONRequestBody PostApiV1VmsVmIdPowerJSONBody
