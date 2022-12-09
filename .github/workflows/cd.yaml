@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     environment:
       name: staging
 
@@ -22,10 +22,29 @@ jobs:
       - name: Build
         run: |
           make build
-          cp ./bin/server ~/CharV-backend/charv-backend
+          mv bin/server bin/charv-backend
 
-      - name: Upload binary
-        run : rsync -e ssh /home/charv/CharV-backend/charv-backend ${{ secrets.DEPLOYMENT_USER }}@${{ secrets.DEPLOYMENT_SERVER }}:/usr/local/bin/charv-backend
+      - name: Tailscale
+        uses: tailscale/github-action@v1
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
 
-      - name: Restart server
-        run : ssh ${{ secrets.DEPLOYMENT_USER }}@${{ secrets.DEPLOYMENT_SERVER }} systemctl restart charv@backend.service
+      - name: rsync deployments
+        uses: burnett01/rsync-deployments@5.2.1
+        with:
+          switches: -avzr --delete
+          path: bin/charv-backend
+          remote_path: /usr/local/bin/charv-backend
+          remote_host: ${{ secrets.DEPLOYMENT_SERVER }}
+          remote_user: ${{ secrets.DEPLOYMENT_USER }}
+          remote_key: ${{ secrets.DEPLOYMENT_KEY }}
+
+      - name: executing remote ssh commands using ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEPLOYMENT_SERVER }}
+          username: ${{ secrets.DEPLOYMENT_USER }}
+          key: ${{ secrets.DEPLOYMENT_KEY }}
+          port: ${{ secrets.DEPLOYMENT_PORT }}
+          script: |
+            systemctl restart charv@backend.service
