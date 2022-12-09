@@ -230,8 +230,8 @@ func GetVmPower(id uuid.UUID, path string) (models.VmPowerInfo, error) {
 	}, nil
 }
 
-func HandleChangeVmPower(id uuid.UUID, action models.PostApiV1VmsVmIdPowerActionParamsAction, sockPath string) error {
-	switch action {
+func HandleChangeVmPower(id uuid.UUID, reqBody models.PostChangeVMsPowerStatusByVMIdRequest, sockPath string) error {
+	switch reqBody.Action {
 	case "start":
 		err := startVmPower(id, sockPath)
 		return err
@@ -256,7 +256,7 @@ func HandleChangeVmPower(id uuid.UUID, action models.PostApiV1VmsVmIdPowerAction
 	return nil
 }
 
-func downVmPower(id uuid.UUID, sockPath string, action models.PostApiV1VmsVmIdPowerActionParamsAction) error {
+func downVmPower(id uuid.UUID, sockPath string, action string) error {
 	file := sockPath + "/" + id.String() + ".sock"
 
 	sock, err := qmp.NewSocketMonitor("unix", file, 2*time.Second)

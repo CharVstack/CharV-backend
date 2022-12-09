@@ -107,8 +107,13 @@ func (v V1Handler) GetApiV1VmsVmIdPower(c *gin.Context, vmId uuid.UUID) {
 	})
 }
 
-func (v V1Handler) PostApiV1VmsVmIdPowerAction(c *gin.Context, vmId openapi_types.UUID, params models.PostApiV1VmsVmIdPowerActionParams) {
-	err := qemu.HandleChangeVmPower(vmId, *params.Action, v.Config.SocketsDir)
+func (v V1Handler) PostApiV1VmsVmIdPower(c *gin.Context, vmId openapi_types.UUID) {
+	var requestBody models.PostChangeVMsPowerStatusByVMIdRequest
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		middleware.GenericErrorHandler(c, err, http.StatusBadRequest)
+		return
+	}
+	err := qemu.HandleChangeVmPower(vmId, requestBody, v.Config.SocketsDir)
 	if err != nil {
 		errWithStatus, ok := err.(qemu.ErrorWithStatus)
 		if ok {
