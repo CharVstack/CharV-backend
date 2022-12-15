@@ -157,7 +157,7 @@ type PostCreateNewVM200Response struct {
 // PatchUpdateVMRequest defines model for PatchUpdateVMRequest.
 type PatchUpdateVMRequest struct {
 	Cpu    int    `json:"cpu"`
-	Memory int    `json:"memory"`
+	Memory uint64 `json:"memory"`
 	Name   string `json:"name"`
 }
 
@@ -169,7 +169,7 @@ type PostChangeVMsPowerStatusByVMIdRequest struct {
 // PostCreateNewVMRequest defines model for PostCreateNewVMRequest.
 type PostCreateNewVMRequest struct {
 	Cpu    int    `json:"cpu"`
-	Memory int    `json:"memory"`
+	Memory uint64 `json:"memory"`
 	Name   string `json:"name"`
 }
 
@@ -182,9 +182,9 @@ type PostApiV1VmsJSONBody struct {
 
 // PatchApiV1VmsVmIdJSONBody defines parameters for PatchApiV1VmsVmId.
 type PatchApiV1VmsVmIdJSONBody struct {
-	Cpu    *int    `json:"cpu,omitempty"`
-	Memory *uint64 `json:"memory,omitempty"`
-	Name   *string `json:"name,omitempty"`
+	Cpu    int    `json:"cpu"`
+	Memory uint64 `json:"memory"`
+	Name   string `json:"name"`
 }
 
 // PostApiV1VmsVmIdPowerJSONBody defines parameters for PostApiV1VmsVmIdPower.

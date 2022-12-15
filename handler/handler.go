@@ -123,3 +123,8 @@ func (v V1Handler) PostApiV1VmsVmIdPower(c *gin.Context, vmId openapi_types.UUID
 	}
 	c.Status(http.StatusOK)
 }
+
+func (v1 V1Handler) DeleteApiV1VmsVmId(c *gin.Context, vmId openapi_types.UUID) {
+	middleware.GenericErrorHandler(c, errors.New("implement me"), http.StatusInternalServerError)
+	return
+}
