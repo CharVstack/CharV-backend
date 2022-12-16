@@ -124,7 +124,13 @@ func (v V1Handler) PostApiV1VmsVmIdPower(c *gin.Context, vmId openapi_types.UUID
 	c.Status(http.StatusOK)
 }
 
-func (v1 V1Handler) DeleteApiV1VmsVmId(c *gin.Context, vmId openapi_types.UUID) {
-	middleware.GenericErrorHandler(c, errors.New("implement me"), http.StatusInternalServerError)
-	return
+func (v V1Handler) DeleteApiV1VmsVmId(c *gin.Context, vmId openapi_types.UUID) {
+	err := qemu.DeleteVm(vmId, v.Config.SocketsDir)
+
+	if err != nil {
+		middleware.GenericErrorHandler(c, err, http.StatusInternalServerError)
+		return
+	}
+
+	c.Status(http.StatusOK)
 }
