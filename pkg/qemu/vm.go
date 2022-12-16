@@ -31,7 +31,6 @@ func install(opts InstallOpts, filePath string) (models.Vm, error) {
 		return models.Vm{}, err
 	}
 	cmd := buf.String()
-	fmt.Println(cmd)
 
 	vm, err := getVmInfo(opts, filePath)
 	if err != nil {
