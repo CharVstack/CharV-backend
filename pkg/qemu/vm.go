@@ -366,8 +366,8 @@ func rebootVmPower(id uuid.UUID, sockPath string) error {
 
 func DeleteVm(id uuid.UUID, sockPath string) error {
 	/*
-	TODO: 一部ハードコードされている部分があるため、後日テストを書く
-	 */
+		TODO: 一部ハードコードされている部分があるため、後日テストを書く
+	*/
 	var vm models.Vm
 
 	info, err := getMachineJson(id)
