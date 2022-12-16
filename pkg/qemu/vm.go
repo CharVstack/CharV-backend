@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"os"
 	"os/exec"
@@ -284,19 +283,29 @@ func downVmPower(id uuid.UUID, sockPath string, action string) error {
 	return nil
 }
 
-func startVmPower(id uuid.UUID, sockPath string) error {
-	var vm models.Vm
-
+func getMachineJson(id uuid.UUID) ([]byte, error) {
 	file, err := filepath.Glob(filepath.Join("/var/lib/charVstack/machines/", "*"+id.String()+".json"))
 	if err != nil {
-		return err
+		return nil, err
+	}
+	if len(file) == 0 {
+		return nil, errors.New("file not exist")
 	}
 
 	if len(file) > 1 {
-		return errors.New("some files have uuid conflicts")
+		return nil, errors.New("some files have uuid conflicts")
 	}
-
 	info, err := os.ReadFile(file[0])
+	if err != nil {
+		return nil, err
+	}
+	return info, nil
+}
+
+func startVmPower(id uuid.UUID, sockPath string) error {
+	var vm models.Vm
+
+	info, err := getMachineJson(id)
 	if err != nil {
 		return err
 	}
@@ -353,4 +362,49 @@ func rebootVmPower(id uuid.UUID, sockPath string) error {
 		time.Sleep(time.Second * 5)
 	}
 	return ErrorWithStatus{error: errors.New("reboot request timed out"), Code: http.StatusRequestTimeout}
+}
+
+func DeleteVm(id uuid.UUID, sockPath string) error {
+	var vm models.Vm
+
+	info, err := getMachineJson(id)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(info, &vm)
+	if err != nil {
+		return err
+	}
+
+	powerInfo, err := GetVmPower(id, sockPath)
+	if err != nil {
+		return err
+	}
+
+	if powerInfo.State != "SHUTDOWN" {
+		return errors.New("vm is running")
+	}
+
+	err = deleteDisk(vm.Name)
+	if err != nil {
+		return err
+	}
+
+	err = deleteConfigurationJson(vm.Name, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func deleteDisk(name string) error {
+	err := os.Remove("/var/lib/charVstack/images/" + name + "Disk.qcow2")
+	return err
+}
+
+func deleteConfigurationJson(name string, id uuid.UUID) error {
+	err := os.Remove("/var/lib/charVstack/machines/" + name + "-" + id.String() + ".json")
+	return err
 }
