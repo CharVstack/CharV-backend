@@ -109,6 +109,8 @@ func main() {
 		MaxAge:           24 * time.Hour,
 	}))
 
+	r.GET("/ws/vnc/:vmId")
+
 	opts := handler.ServerConfig{
 		StorageDir: os.Getenv("STORAGE_DIR"),
 		SocketsDir: os.Getenv("SOCKETS_DIR"),
