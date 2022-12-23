@@ -109,7 +109,8 @@ func main() {
 		MaxAge:           24 * time.Hour,
 	}))
 
-	r.GET("/ws/vnc/:vmId")
+	vncHandler := handler.NewVNCHandler(logger)
+	r.GET("/ws/vnc/:vmId", vncHandler.Handler)
 
 	opts := handler.ServerConfig{
 		StorageDir: os.Getenv("STORAGE_DIR"),

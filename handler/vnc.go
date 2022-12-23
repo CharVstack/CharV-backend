@@ -20,7 +20,8 @@ type vncLogger struct {
 	logger *zap.Logger
 }
 
-func (vh *vncHandler) Handler(c *gin.Context, vmId string) {
+func (vh *vncHandler) Handler(c *gin.Context) {
+	vmId := c.Param("vmId")
 	vms, err := qemu.GetAllVmInfo()
 	if err != nil {
 		middleware.GenericErrorHandler(c, err, http.StatusInternalServerError)
