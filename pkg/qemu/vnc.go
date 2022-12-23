@@ -7,9 +7,9 @@ import (
 	"github.com/gamoutatsumi/go-vncproxy"
 )
 
-func NewVNCProxy(vmId string) *vncproxy.Proxy {
+func NewVNCProxy(vmId string, logger vncproxy.Logger) *vncproxy.Proxy {
 	return vncproxy.New(&vncproxy.Config{
-		LogLevel: vncproxy.InfoLevel,
+		Logger: logger,
 		TokenHandler: func(r *http.Request) (addr, mode string, err error) {
 			return filepath.Join("var", "run", "charvstack", "vnc-"+vmId+".sock"), "unix", nil
 		},

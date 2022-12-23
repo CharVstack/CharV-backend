@@ -16,8 +16,8 @@ github.com/digitalocean/go-qemu v0.0.0-20220826173844-d5f5e3ceed89/go.mod h1:GUM
 github.com/evangwt/go-bufcopy v0.1.1 h1:dJDsc/n+rDQj1jEQueddij8Lok4XSy3jBEjCNztqdDE=
 github.com/evangwt/go-bufcopy v0.1.1/go.mod h1:0rJeA3+mLjd/WmJmDjZdNU1dZZAxlzW2+VDgGrxFzL8=
 github.com/fatih/camelcase v1.0.0/go.mod h1:yN2Sb0lFhZJUdVvtELVWefmrXpuZESvPmqwoZc+/fpc=
-github.com/gamoutatsumi/go-vncproxy v0.0.0-20221222022840-e7e483285262 h1:KhQxFLVZ/AVz1zVOv8pkR3Z3/Xal409JF439S6w3gZc=
-github.com/gamoutatsumi/go-vncproxy v0.0.0-20221222022840-e7e483285262/go.mod h1:FFzM7KbVBlRY4mafm5p9iiUnTasqPHVRdKv0B/PZ+bw=
+github.com/gamoutatsumi/go-vncproxy v0.0.0-20221223023419-f354197a2aac h1:736tzzYsfzs3Q8pJrJx0oHyuu7PLufkiwM2DxYAtIko=
+github.com/gamoutatsumi/go-vncproxy v0.0.0-20221223023419-f354197a2aac/go.mod h1:FFzM7KbVBlRY4mafm5p9iiUnTasqPHVRdKv0B/PZ+bw=
 github.com/getkin/kin-openapi v0.110.0 h1:1GnJALxsltcSzCMqgtqKlLhYQeULv3/jesmV2sC5qE0=
 github.com/getkin/kin-openapi v0.110.0/go.mod h1:QtwUNt0PAAgIIBEvFWYfB7dfngxtAaqCX1zYHMZDeK8=
 github.com/gin-contrib/cors v1.4.0 h1:oJ6gwtUl3lqV0WEIwM/LxPF1QZ5qe2lGWdY2+bz7y0g=

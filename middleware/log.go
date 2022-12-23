@@ -21,6 +21,7 @@ func Logger(logger *zap.Logger) gin.HandlerFunc {
 				zap.String("ip", c.ClientIP()),
 				zap.String("user-agent", c.Request.UserAgent()),
 				zap.Duration("elapsed", time.Since(start)),
+				zap.String("provider", "charv-api"),
 			)
 		} else if err := c.Errors.ByType(gin.ErrorTypePublic).Last(); err != nil {
 			logger.Warn(
@@ -32,6 +33,7 @@ func Logger(logger *zap.Logger) gin.HandlerFunc {
 				zap.String("ip", c.ClientIP()),
 				zap.String("user-agent", c.Request.UserAgent()),
 				zap.Duration("elapsed", time.Since(start)),
+				zap.String("provider", "charv-api"),
 			)
 		} else {
 			logger.Info(
@@ -43,6 +45,7 @@ func Logger(logger *zap.Logger) gin.HandlerFunc {
 				zap.String("ip", c.ClientIP()),
 				zap.String("user-agent", c.Request.UserAgent()),
 				zap.Duration("elapsed", time.Since(start)),
+				zap.String("provider", "charv-api"),
 			)
 		}
 	}
