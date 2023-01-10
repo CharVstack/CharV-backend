@@ -87,7 +87,6 @@ func main() {
 	validatorOpts := oapiMiddleware.Options{
 		ErrorHandler: middleware.ValidationErrorHandler,
 	}
-	r.Use(oapiMiddleware.OapiRequestValidatorWithOptions(swagger, &validatorOpts))
 
 	r.Use(gin.Recovery())
 
@@ -109,9 +108,6 @@ func main() {
 		MaxAge:           24 * time.Hour,
 	}))
 
-	vncHandler := handler.NewVNCHandler(logger)
-	r.GET("/ws/vnc/:vmId", vncHandler.Handler)
-
 	opts := handler.ServerConfig{
 		StorageDir: os.Getenv("STORAGE_DIR"),
 		SocketsDir: os.Getenv("SOCKETS_DIR"),
@@ -121,7 +117,14 @@ func main() {
 	ginServerOpts := adapters.GinServerOptions{
 		ErrorHandler: middleware.GenericErrorHandler,
 	}
+
 	router := adapters.RegisterHandlersWithOptions(r, v1Handler, ginServerOpts)
+
+	vncHandler := handler.NewVNCHandler(logger)
+	router.GET("/ws/vnc/:vmId", vncHandler.Handler)
+
+	oasRouter := router.Group("/api")
+	oasRouter.Use(oapiMiddleware.OapiRequestValidatorWithOptions(swagger, &validatorOpts))
 
 	if err := router.Run(":8080"); err != nil {
 		log.Fatal(err.Error())
