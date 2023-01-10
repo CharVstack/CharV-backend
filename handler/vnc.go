@@ -13,7 +13,8 @@ import (
 )
 
 type vncHandler struct {
-	logger vncproxy.Logger
+	logger     vncproxy.Logger
+	socketsDir string
 }
 
 type vncLogger struct {
@@ -30,7 +31,7 @@ func (vh *vncHandler) Handler(c *gin.Context) {
 	var proxy *vncproxy.Proxy
 	for _, vm := range vms {
 		if vmId == vm.Metadata.Id.String() {
-			proxy = qemu.NewVNCProxy(vmId, vh.logger)
+			proxy = qemu.NewVNCProxy(vmId, vh.logger, vh.socketsDir)
 			break
 		}
 	}
@@ -56,9 +57,10 @@ func newVNCLogger(logger *zap.Logger) *vncLogger {
 	}
 }
 
-func NewVNCHandler(logger *zap.Logger) *vncHandler {
+func NewVNCHandler(logger *zap.Logger, socketsDir string) *vncHandler {
 	vncLogger := newVNCLogger(logger)
 	return &vncHandler{
-		logger: vncLogger,
+		logger:     vncLogger,
+		socketsDir: socketsDir,
 	}
 }

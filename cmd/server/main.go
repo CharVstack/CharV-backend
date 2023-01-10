@@ -120,7 +120,7 @@ func main() {
 
 	router := adapters.RegisterHandlersWithOptions(r, v1Handler, ginServerOpts)
 
-	vncHandler := handler.NewVNCHandler(logger)
+	vncHandler := handler.NewVNCHandler(logger, os.Getenv("SOCKETS_DIR"))
 	router.GET("/ws/vnc/:vmId", vncHandler.Handler)
 
 	oasRouter := router.Group("/api")
