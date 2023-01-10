@@ -47,8 +47,16 @@ func (l *vncLogger) Infof(format string, v ...interface{}) {
 	l.logger.Info(fmt.Sprintf(format, fmt.Sprint(v...)), zap.String("provider", "vncproxy"))
 }
 
+func (l *vncLogger) Info(msg string) {
+	l.logger.Info(msg, zap.String("provider", "vncproxy"))
+}
+
 func (l *vncLogger) Debugf(format string, v ...interface{}) {
 	l.logger.Debug(fmt.Sprintf(format, fmt.Sprint(v...)), zap.String("provider", "vncproxy"))
+}
+
+func (l *vncLogger) Debug(msg string) {
+	l.logger.Debug(msg, zap.String("provider", "vncproxy"))
 }
 
 func newVNCLogger(logger *zap.Logger) *vncLogger {
