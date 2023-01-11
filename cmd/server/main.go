@@ -118,10 +118,10 @@ func main() {
 		ErrorHandler: middleware.GenericErrorHandler,
 	}
 
-	router := adapters.RegisterHandlersWithOptions(r, v1Handler, ginServerOpts)
+	vncHandler := handler.NewVNCHandler(logger, os.Getenv("SOCKETS_DIR"), production)
+	r.GET("/ws/vnc/:vmId", vncHandler.Handler)
 
-	vncHandler := handler.NewVNCHandler(logger, os.Getenv("SOCKETS_DIR"))
-	router.GET("/ws/vnc/:vmId", vncHandler.Handler)
+	router := adapters.RegisterHandlersWithOptions(r, v1Handler, ginServerOpts)
 
 	oasRouter := router.Group("/api")
 	oasRouter.Use(oapiMiddleware.OapiRequestValidatorWithOptions(swagger, &validatorOpts))

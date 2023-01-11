@@ -15,6 +15,7 @@ import (
 type vncHandler struct {
 	logger     vncproxy.Logger
 	socketsDir string
+	logLevel   uint32
 }
 
 type vncLogger struct {
@@ -31,7 +32,7 @@ func (vh *vncHandler) Handler(c *gin.Context) {
 	var proxy *vncproxy.Proxy
 	for _, vm := range vms {
 		if vmId == vm.Metadata.Id.String() {
-			proxy = qemu.NewVNCProxy(vmId, vh.logger, vh.socketsDir)
+			proxy = qemu.NewVNCProxy(vmId, vh.logger, vh.socketsDir, vh.logLevel)
 			break
 		}
 	}
@@ -65,10 +66,17 @@ func newVNCLogger(logger *zap.Logger) *vncLogger {
 	}
 }
 
-func NewVNCHandler(logger *zap.Logger, socketsDir string) *vncHandler {
+func NewVNCHandler(logger *zap.Logger, socketsDir string, isProduction bool) *vncHandler {
 	vncLogger := newVNCLogger(logger)
+	var logLevel uint32
+	if isProduction {
+		logLevel = vncproxy.InfoLevel
+	} else {
+		logLevel = vncproxy.DebugLevel
+	}
 	return &vncHandler{
 		logger:     vncLogger,
 		socketsDir: socketsDir,
+		logLevel:   logLevel,
 	}
 }
