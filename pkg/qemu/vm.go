@@ -364,7 +364,7 @@ func rebootVmPower(id uuid.UUID, sockPath string) error {
 	return ErrorWithStatus{error: errors.New("reboot request timed out"), Code: http.StatusRequestTimeout}
 }
 
-func DeleteVm(id uuid.UUID, sockPath string) error {
+func DeleteVm(id uuid.UUID, sockDir string) error {
 	/*
 		TODO: 一部ハードコードされている部分があるため、後日テストを書く
 	*/
@@ -375,12 +375,11 @@ func DeleteVm(id uuid.UUID, sockPath string) error {
 		return err
 	}
 
-	err = json.Unmarshal(info, &vm)
-	if err != nil {
+	if err := json.Unmarshal(info, &vm); err != nil {
 		return err
 	}
 
-	powerInfo, err := GetVmPower(id, sockPath)
+	powerInfo, err := GetVmPower(id, sockDir)
 	if err != nil {
 		return err
 	}
@@ -389,13 +388,15 @@ func DeleteVm(id uuid.UUID, sockPath string) error {
 		return errors.New("vm is running")
 	}
 
-	err = deleteDisk(vm.Name)
-	if err != nil {
+	if err := deleteDisk(vm.Name); err != nil {
 		return err
 	}
 
-	err = deleteConfigurationJson(vm.Name, id)
-	if err != nil {
+	if err := deleteConfigurationJson(vm.Name, id); err != nil {
+		return err
+	}
+
+	if err := deleteVncSocket(vm.Name, id, sockDir); err != nil {
 		return err
 	}
 
@@ -403,11 +404,16 @@ func DeleteVm(id uuid.UUID, sockPath string) error {
 }
 
 func deleteDisk(name string) error {
-	err := os.Remove("/var/lib/charVstack/images/" + name + "Disk.qcow2")
+	err := os.Remove(filepath.Join("/var/lib/charVstack/images/", name+"Disk.qcow2"))
 	return err
 }
 
 func deleteConfigurationJson(name string, id uuid.UUID) error {
-	err := os.Remove("/var/lib/charVstack/machines/" + name + "-" + id.String() + ".json")
+	err := os.Remove(filepath.Join("/var/lib/charVstack/machines/", name+"-"+id.String()+".json"))
+	return err
+}
+
+func deleteVncSocket(name string, id uuid.UUID, sockDir string) error {
+	err := os.Remove(filepath.Join(sockDir, "vnc-"+id.String()+".sock"))
 	return err
 }

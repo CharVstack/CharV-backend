@@ -100,6 +100,7 @@ func main() {
 			"GET",
 			"POST",
 			"OPTIONS",
+			"DELETE",
 		},
 		AllowHeaders: []string{
 			"Content-Type",
