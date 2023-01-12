@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/deepmap/oapi-codegen v1.12.4
-	github.com/digitalocean/go-qemu v0.0.0-20220826173844-d5f5e3ceed89
+	github.com/digitalocean/go-qemu v0.0.0-20221209210016-f035778c97f7
 	github.com/gamoutatsumi/go-vncproxy v0.0.0-20230110031601-648eff7a5f2b
 	github.com/getkin/kin-openapi v0.112.0
 	github.com/gin-contrib/cors v1.4.0

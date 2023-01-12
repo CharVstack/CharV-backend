@@ -11,11 +11,10 @@ github.com/deepmap/oapi-codegen v1.12.4 h1:pPmn6qI9MuOtCz82WY2Xaw46EQjgvxednXXrP
 github.com/deepmap/oapi-codegen v1.12.4/go.mod h1:3lgHGMu6myQ2vqbbTXH2H1o4eXFTGnFiDaOaKKl5yas=
 github.com/digitalocean/go-libvirt v0.0.0-20220804181439-8648fbde413e h1:SCnqm8SjSa0QqRxXbo5YY//S+OryeJioe17nK+iDZpg=
 github.com/digitalocean/go-libvirt v0.0.0-20220804181439-8648fbde413e/go.mod h1:o129ljs6alsIQTc8d6eweihqpmmrbxZ2g1jhgjhPykI=
-github.com/digitalocean/go-qemu v0.0.0-20220826173844-d5f5e3ceed89 h1:2/52ma1zkjfR9aIrAX1F9H24rpj+PkCDkAwhQgqVR/A=
-github.com/digitalocean/go-qemu v0.0.0-20220826173844-d5f5e3ceed89/go.mod h1:GUMRsCBc7W7BzUF0zizFJ7Pna929325F+v9hvnWD+pI=
+github.com/digitalocean/go-qemu v0.0.0-20221209210016-f035778c97f7 h1:3OVJAbR131SnAXao7c9w8bFlAGH0oa29DCwsa88MJGk=
+github.com/digitalocean/go-qemu v0.0.0-20221209210016-f035778c97f7/go.mod h1:K4+o74YGNjOb9N6yyG+LPj1NjHtk+Qz0IYQPvirbaLs=
 github.com/evangwt/go-bufcopy v0.1.1 h1:dJDsc/n+rDQj1jEQueddij8Lok4XSy3jBEjCNztqdDE=
 github.com/evangwt/go-bufcopy v0.1.1/go.mod h1:0rJeA3+mLjd/WmJmDjZdNU1dZZAxlzW2+VDgGrxFzL8=
-github.com/fatih/camelcase v1.0.0/go.mod h1:yN2Sb0lFhZJUdVvtELVWefmrXpuZESvPmqwoZc+/fpc=
 github.com/gamoutatsumi/go-vncproxy v0.0.0-20230110031601-648eff7a5f2b h1:gs1hAmXhGb70FPfhHy05Y+Rom1mT5QaNkT4UcbWl7kY=
 github.com/gamoutatsumi/go-vncproxy v0.0.0-20230110031601-648eff7a5f2b/go.mod h1:FFzM7KbVBlRY4mafm5p9iiUnTasqPHVRdKv0B/PZ+bw=
 github.com/getkin/kin-openapi v0.112.0 h1:lnLXx3bAG53EJVI4E/w0N8i1Y/vUZUEsnrXkgnfn7/Y=
