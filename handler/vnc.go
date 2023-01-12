@@ -37,7 +37,7 @@ func (vh *vncHandler) Handler(c *gin.Context) {
 		}
 	}
 	if proxy == nil {
-		middleware.GenericErrorHandler(c, fmt.Errorf("%s is not found.", vmId), http.StatusNotFound)
+		middleware.GenericErrorHandler(c, fmt.Errorf("%s is not found", vmId), http.StatusNotFound)
 		return
 	}
 	h := websocket.Handler(proxy.ServeWS)
