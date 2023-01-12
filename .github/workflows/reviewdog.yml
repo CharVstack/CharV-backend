@@ -5,15 +5,15 @@ on:
 
 jobs:
   govet:
-    name: runner / govet
+    name: runner / lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: run govet
+      - name: run golangci-lint
         uses: reviewdog/action-golangci-lint@v2
         with:
-          golangci_lint_flags: "--disable-all -E govet"
-          tool_name: govet
+          golangci_lint_flags: "-E unparam"
+          tool_name: golangci-lint
           level: warning
           reporter: github-pr-review
 

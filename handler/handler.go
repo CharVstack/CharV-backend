@@ -86,13 +86,11 @@ func (v V1Handler) PostApiV1Vms(c *gin.Context) {
 func (v V1Handler) GetApiV1VmsVmId(c *gin.Context, vmId openapi_types.UUID) {
 	//TODO implement me
 	middleware.GenericErrorHandler(c, errors.New("implement me"), http.StatusInternalServerError)
-	return
 }
 
 func (v V1Handler) PatchApiV1VmsVmId(c *gin.Context, vmId openapi_types.UUID) {
 	//TODO implement me
 	middleware.GenericErrorHandler(c, errors.New("implement me"), http.StatusInternalServerError)
-	return
 }
 
 func (v V1Handler) GetApiV1VmsVmIdPower(c *gin.Context, vmId uuid.UUID) {

@@ -20,7 +20,7 @@ import (
 )
 
 func install(opts InstallOpts, filePath string) (models.Vm, error) {
-	tmpl, err := template.New("install").Parse(`qemu-system-x86_64 -accel kvm -daemonize -display none -name guest={{.Name}} -smp {{.VCpu}} -m {{.Memory}} -cdrom /var/lib/charVstack/iso/{{.Image}} -boot order=d -drive file=/var/lib/charVstack/images/{{.Disk}}.qcow2,format=qcow2 -drive file=/var/lib/charVstack/bios/bios.bin,format=raw,if=pflash,readonly=on -qmp unix:/{{.SocketPath}}/{{.Id}}.sock,server,nowait`)
+	tmpl, err := template.New("install").Parse(`qemu-system-x86_64 -accel kvm -daemonize -display none -name guest={{.Name}} -smp {{.VCpu}} -m {{.Memory}} -cdrom /var/lib/charVstack/iso/{{.Image}} -boot order=d -drive file=/var/lib/charVstack/images/{{.Disk}}.qcow2,format=qcow2 -drive file=/var/lib/charVstack/bios/bios.bin,format=raw,if=pflash,readonly=on -qmp unix:/{{.SocketPath}}/{{.Id}}.sock,server,nowait -vnc unix:/{{.SocketPath}}/vnc-{{.Id}}.sock`)
 	if err != nil {
 		return models.Vm{}, err
 	}
@@ -90,7 +90,9 @@ func getAllVms(directoryPath string) ([]models.Vm, error) {
 		}
 
 		vmList = append(vmList, vm)
-
+	}
+	if vmList == nil {
+		vmList = []models.Vm{}
 	}
 	return vmList, err
 }
@@ -191,6 +193,9 @@ func run(cmd string) error {
 func parse(path string) (models.Vm, error) {
 	var machine models.Vm
 	abspath, err := filepath.Abs(path)
+	if err != nil {
+		return models.Vm{}, err
+	}
 	raw, err := os.ReadFile(abspath)
 	if err != nil {
 		return models.Vm{}, err
@@ -254,7 +259,7 @@ func HandleChangeVmPower(id uuid.UUID, reqBody models.PostChangeVMsPowerStatusBy
 	return nil
 }
 
-func downVmPower(id uuid.UUID, sockPath string, action string) error {
+func downVmPower(id uuid.UUID, sockPath string, action string) (err error) {
 	file := sockPath + "/" + id.String() + ".sock"
 
 	sock, err := qmp.NewSocketMonitor("unix", file, 2*time.Second)
@@ -267,7 +272,9 @@ func downVmPower(id uuid.UUID, sockPath string, action string) error {
 		return err
 	}
 
-	defer sock.Disconnect()
+	defer func() {
+		err = sock.Disconnect()
+	}()
 
 	cmd := []byte(`{ "execute": "` + action + `" }`)
 	_, err = sock.Run(cmd)
@@ -326,11 +333,12 @@ func startVmPower(id uuid.UUID, sockPath string) error {
 
 	tmpl, _ := template.New("install").Parse(`qemu-system-x86_64 -accel kvm -daemonize -display none -name guest={{.Name}} -smp {{.VCpu}} -m {{.Memory}} -drive file=/var/lib/charVstack/images/{{.Disk}}.qcow2,format=qcow2 -drive file=/var/lib/charVstack/bios/bios.bin,format=raw,if=pflash,readonly=on -qmp unix:/{{.SocketPath}}/{{.Id}}.sock,server,nowait`)
 	var buf bytes.Buffer
-	tmpl.Execute(&buf, StartOpts)
+	if err := tmpl.Execute(&buf, StartOpts); err != nil {
+		return err
+	}
 	cmd := buf.String()
 
-	err = run(cmd)
-	if err != nil {
+	if err := run(cmd); err != nil {
 		return err
 	}
 	return nil
@@ -364,7 +372,7 @@ func rebootVmPower(id uuid.UUID, sockPath string) error {
 	return ErrorWithStatus{error: errors.New("reboot request timed out"), Code: http.StatusRequestTimeout}
 }
 
-func DeleteVm(id uuid.UUID, sockPath string) error {
+func DeleteVm(id uuid.UUID, sockDir string) error {
 	/*
 		TODO: 一部ハードコードされている部分があるため、後日テストを書く
 	*/
@@ -375,12 +383,11 @@ func DeleteVm(id uuid.UUID, sockPath string) error {
 		return err
 	}
 
-	err = json.Unmarshal(info, &vm)
-	if err != nil {
+	if err := json.Unmarshal(info, &vm); err != nil {
 		return err
 	}
 
-	powerInfo, err := GetVmPower(id, sockPath)
+	powerInfo, err := GetVmPower(id, sockDir)
 	if err != nil {
 		return err
 	}
@@ -389,13 +396,15 @@ func DeleteVm(id uuid.UUID, sockPath string) error {
 		return errors.New("vm is running")
 	}
 
-	err = deleteDisk(vm.Name)
-	if err != nil {
+	if err := deleteDisk(vm.Name); err != nil {
 		return err
 	}
 
-	err = deleteConfigurationJson(vm.Name, id)
-	if err != nil {
+	if err := deleteConfigurationJson(vm.Name, id); err != nil {
+		return err
+	}
+
+	if err := deleteVncSocket(id, sockDir); err != nil {
 		return err
 	}
 
@@ -403,11 +412,16 @@ func DeleteVm(id uuid.UUID, sockPath string) error {
 }
 
 func deleteDisk(name string) error {
-	err := os.Remove("/var/lib/charVstack/images/" + name + "Disk.qcow2")
+	err := os.Remove(filepath.Join("/var/lib/charVstack/images/", name+"Disk.qcow2"))
 	return err
 }
 
 func deleteConfigurationJson(name string, id uuid.UUID) error {
-	err := os.Remove("/var/lib/charVstack/machines/" + name + "-" + id.String() + ".json")
+	err := os.Remove(filepath.Join("/var/lib/charVstack/machines/", name+"-"+id.String()+".json"))
+	return err
+}
+
+func deleteVncSocket(id uuid.UUID, sockDir string) error {
+	err := os.Remove(filepath.Join(sockDir, "vnc-"+id.String()+".sock"))
 	return err
 }

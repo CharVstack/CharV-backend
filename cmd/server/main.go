@@ -87,7 +87,6 @@ func main() {
 	validatorOpts := oapiMiddleware.Options{
 		ErrorHandler: middleware.ValidationErrorHandler,
 	}
-	r.Use(oapiMiddleware.OapiRequestValidatorWithOptions(swagger, &validatorOpts))
 
 	r.Use(gin.Recovery())
 
@@ -101,6 +100,7 @@ func main() {
 			"GET",
 			"POST",
 			"OPTIONS",
+			"DELETE",
 		},
 		AllowHeaders: []string{
 			"Content-Type",
@@ -118,7 +118,14 @@ func main() {
 	ginServerOpts := adapters.GinServerOptions{
 		ErrorHandler: middleware.GenericErrorHandler,
 	}
+
+	vncHandler := handler.NewVNCHandler(logger, os.Getenv("SOCKETS_DIR"), production)
+	r.GET("/ws/vnc/:vmId", vncHandler.Handler)
+
 	router := adapters.RegisterHandlersWithOptions(r, v1Handler, ginServerOpts)
+
+	oasRouter := router.Group("/api")
+	oasRouter.Use(oapiMiddleware.OapiRequestValidatorWithOptions(swagger, &validatorOpts))
 
 	if err := router.Run(":8080"); err != nil {
 		log.Fatal(err.Error())
