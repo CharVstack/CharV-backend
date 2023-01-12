@@ -36,7 +36,7 @@ fmt: tools ## Format Code
 	tools/goimports -w ./
 
 lint: fmt tidy ## Lint Code
-	go vet ./...
+	tools/golangci-lint run -E unparam
 
 test: testassets ## Run Test
 	go test -v ./...
@@ -49,7 +49,10 @@ test/resources/image/bad.qcow2:
 test/resources/image/ok.qcow2:
 	qemu-img create -f qcow2 test/resources/image/ok.qcow2 4G
 
-tools: tools/goimports tools/air # Install Tools
+tools: tools/goimports tools/air tools/golangci-lint # Install Tools
+
+tools/golangci-lint:
+	GOBIN=$(GOBIN) go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
 
 tools/goimports:
 	GOBIN=$(GOBIN) go install golang.org/x/tools/cmd/goimports@v0.3.0
@@ -64,6 +67,7 @@ build: $(BINARIES) ## Build Server Binary
 
 $(BINARIES): $(GO_FILES) VERSION .git/HEAD
 	@go build $(GOFLAGS) -o $@ $(GO_BUILD) $(@:$(BINDIR)/%=$(ROOT_PACKAGE)/cmd/%)
+
 
 coverage: testassets tools # Generate Coverage
 	go test -cover -coverprofile=coverage.out ./...

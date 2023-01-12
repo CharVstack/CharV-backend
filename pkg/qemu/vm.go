@@ -193,6 +193,9 @@ func run(cmd string) error {
 func parse(path string) (models.Vm, error) {
 	var machine models.Vm
 	abspath, err := filepath.Abs(path)
+	if err != nil {
+		return models.Vm{}, err
+	}
 	raw, err := os.ReadFile(abspath)
 	if err != nil {
 		return models.Vm{}, err
@@ -256,7 +259,7 @@ func HandleChangeVmPower(id uuid.UUID, reqBody models.PostChangeVMsPowerStatusBy
 	return nil
 }
 
-func downVmPower(id uuid.UUID, sockPath string, action string) error {
+func downVmPower(id uuid.UUID, sockPath string, action string) (err error) {
 	file := sockPath + "/" + id.String() + ".sock"
 
 	sock, err := qmp.NewSocketMonitor("unix", file, 2*time.Second)
@@ -269,7 +272,9 @@ func downVmPower(id uuid.UUID, sockPath string, action string) error {
 		return err
 	}
 
-	defer sock.Disconnect()
+	defer func() {
+		err = sock.Disconnect()
+	}()
 
 	cmd := []byte(`{ "execute": "` + action + `" }`)
 	_, err = sock.Run(cmd)
@@ -328,11 +333,12 @@ func startVmPower(id uuid.UUID, sockPath string) error {
 
 	tmpl, _ := template.New("install").Parse(`qemu-system-x86_64 -accel kvm -daemonize -display none -name guest={{.Name}} -smp {{.VCpu}} -m {{.Memory}} -drive file=/var/lib/charVstack/images/{{.Disk}}.qcow2,format=qcow2 -drive file=/var/lib/charVstack/bios/bios.bin,format=raw,if=pflash,readonly=on -qmp unix:/{{.SocketPath}}/{{.Id}}.sock,server,nowait`)
 	var buf bytes.Buffer
-	tmpl.Execute(&buf, StartOpts)
+	if err := tmpl.Execute(&buf, StartOpts); err != nil {
+		return err
+	}
 	cmd := buf.String()
 
-	err = run(cmd)
-	if err != nil {
+	if err := run(cmd); err != nil {
 		return err
 	}
 	return nil
@@ -398,7 +404,7 @@ func DeleteVm(id uuid.UUID, sockDir string) error {
 		return err
 	}
 
-	if err := deleteVncSocket(vm.Name, id, sockDir); err != nil {
+	if err := deleteVncSocket(id, sockDir); err != nil {
 		return err
 	}
 
@@ -415,7 +421,7 @@ func deleteConfigurationJson(name string, id uuid.UUID) error {
 	return err
 }
 
-func deleteVncSocket(name string, id uuid.UUID, sockDir string) error {
+func deleteVncSocket(id uuid.UUID, sockDir string) error {
 	err := os.Remove(filepath.Join(sockDir, "vnc-"+id.String()+".sock"))
 	return err
 }
