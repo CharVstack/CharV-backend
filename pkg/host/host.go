@@ -44,6 +44,9 @@ func GetInfo(opt GetInfoOptions) (models.Host, error) {
 
 		storagePools = append(storagePools, storagePoolInfo)
 	}
+	if storagePools == nil {
+		storagePools = []models.StoragePool{}
+	}
 
 	return models.Host{
 		Cpu:          cpuInfo,

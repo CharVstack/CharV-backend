@@ -90,7 +90,9 @@ func getAllVms(directoryPath string) ([]models.Vm, error) {
 		}
 
 		vmList = append(vmList, vm)
-
+	}
+	if vmList == nil {
+		vmList = []models.Vm{}
 	}
 	return vmList, err
 }

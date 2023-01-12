@@ -42,9 +42,6 @@ func (v V1Handler) GetApiV1Host(c *gin.Context) {
 		middleware.GenericErrorHandler(c, err, http.StatusInternalServerError)
 		return
 	}
-	if len(hostInfo.StoragePools) == 0 {
-		hostInfo.StoragePools = []models.StoragePool{}
-	}
 	c.JSON(http.StatusOK, models.GetHost200Response{
 		Host: hostInfo,
 	})
@@ -55,9 +52,6 @@ func (v V1Handler) GetApiV1Vms(c *gin.Context) {
 	if err != nil {
 		middleware.GenericErrorHandler(c, err, http.StatusInternalServerError)
 		return
-	}
-	if len(allVmsInfo) == 0 {
-		allVmsInfo = []models.Vm{}
 	}
 	c.JSON(http.StatusOK, models.GetAllVMsList200Response{
 		Vms: allVmsInfo,
