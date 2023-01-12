@@ -18,8 +18,8 @@ github.com/evangwt/go-bufcopy v0.1.1/go.mod h1:0rJeA3+mLjd/WmJmDjZdNU1dZZAxlzW2+
 github.com/fatih/camelcase v1.0.0/go.mod h1:yN2Sb0lFhZJUdVvtELVWefmrXpuZESvPmqwoZc+/fpc=
 github.com/gamoutatsumi/go-vncproxy v0.0.0-20230110031601-648eff7a5f2b h1:gs1hAmXhGb70FPfhHy05Y+Rom1mT5QaNkT4UcbWl7kY=
 github.com/gamoutatsumi/go-vncproxy v0.0.0-20230110031601-648eff7a5f2b/go.mod h1:FFzM7KbVBlRY4mafm5p9iiUnTasqPHVRdKv0B/PZ+bw=
-github.com/getkin/kin-openapi v0.110.0 h1:1GnJALxsltcSzCMqgtqKlLhYQeULv3/jesmV2sC5qE0=
-github.com/getkin/kin-openapi v0.110.0/go.mod h1:QtwUNt0PAAgIIBEvFWYfB7dfngxtAaqCX1zYHMZDeK8=
+github.com/getkin/kin-openapi v0.112.0 h1:lnLXx3bAG53EJVI4E/w0N8i1Y/vUZUEsnrXkgnfn7/Y=
+github.com/getkin/kin-openapi v0.112.0/go.mod h1:QtwUNt0PAAgIIBEvFWYfB7dfngxtAaqCX1zYHMZDeK8=
 github.com/gin-contrib/cors v1.4.0 h1:oJ6gwtUl3lqV0WEIwM/LxPF1QZ5qe2lGWdY2+bz7y0g=
 github.com/gin-contrib/cors v1.4.0/go.mod h1:bs9pNM0x/UsmHPBWT2xZz9ROh8xYjYkiURUfmBoMlcs=
 github.com/gin-contrib/sse v0.1.0 h1:Y/yl/+YNO8GZSjAhjMsSuLt29uWRFHdHYUb5lYOV9qE=
