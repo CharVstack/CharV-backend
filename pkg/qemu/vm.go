@@ -289,6 +289,9 @@ func downVmPower(id uuid.UUID, sockPath string, action string) (err error) {
 	}
 
 	err = deleteVncSocket(id, sockPath)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
