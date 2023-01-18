@@ -287,6 +287,12 @@ func downVmPower(id uuid.UUID, sockPath string, action string) (err error) {
 	if err != nil {
 		return err
 	}
+
+	err = deleteVncSocket(id, sockPath)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -331,7 +337,7 @@ func startVmPower(id uuid.UUID, sockPath string) error {
 		SocketPath: sockPath,
 	}
 
-	tmpl, _ := template.New("install").Parse(`qemu-system-x86_64 -accel kvm -daemonize -display none -name guest={{.Name}} -smp {{.VCpu}} -m {{.Memory}} -drive file=/var/lib/charVstack/images/{{.Disk}}.qcow2,format=qcow2 -drive file=/var/lib/charVstack/bios/bios.bin,format=raw,if=pflash,readonly=on -qmp unix:/{{.SocketPath}}/{{.Id}}.sock,server,nowait`)
+	tmpl, _ := template.New("install").Parse(`qemu-system-x86_64 -accel kvm -daemonize -display none -name guest={{.Name}} -smp {{.VCpu}} -m {{.Memory}} -drive file=/var/lib/charVstack/images/{{.Disk}}.qcow2,format=qcow2 -drive file=/var/lib/charVstack/bios/bios.bin,format=raw,if=pflash,readonly=on -qmp unix:/{{.SocketPath}}/{{.Id}}.sock,server,nowait -vnc unix:/{{.SocketPath}}/vnc-{{.Id}}.sock`)
 	var buf bytes.Buffer
 	if err := tmpl.Execute(&buf, StartOpts); err != nil {
 		return err
