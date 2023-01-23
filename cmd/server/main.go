@@ -12,6 +12,13 @@ package main
 import (
 	"errors"
 	"flag"
+	"github.com/CharVstack/CharV-backend/infrastructure/disk"
+	"github.com/CharVstack/CharV-backend/infrastructure/file"
+	"github.com/CharVstack/CharV-backend/infrastructure/system"
+	"github.com/CharVstack/CharV-backend/infrastructure/utils"
+	"github.com/CharVstack/CharV-backend/interfaces"
+	"github.com/CharVstack/CharV-backend/usecase/host"
+	"github.com/CharVstack/CharV-backend/usecase/vm/qemu"
 	"io/fs"
 	"log"
 	"os"
@@ -20,8 +27,7 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
-	"github.com/CharVstack/CharV-backend/adapters"
-	"github.com/CharVstack/CharV-backend/handler"
+	"github.com/CharVstack/CharV-backend/api"
 	"github.com/CharVstack/CharV-backend/middleware"
 	oapiMiddleware "github.com/deepmap/oapi-codegen/pkg/gin-middleware"
 	"github.com/gin-contrib/cors"
@@ -42,14 +48,32 @@ func init() {
 		log.Fatal(err.Error())
 	}
 
-	storageDirEnv := os.Getenv("STORAGE_DIR")
-	_, err = os.ReadDir(storageDirEnv)
+	imagesDir := os.Getenv("IMAGES_DIR")
+	_, err = os.ReadDir(imagesDir)
 	if err != nil && errors.Is(err, fs.ErrNotExist) {
 		log.Fatal(err.Error())
 	}
 
-	socketsDirEnv := os.Getenv("SOCKETS_DIR")
-	_, err = os.ReadDir(socketsDirEnv)
+	guestsDir := os.Getenv("GUESTS_DIR")
+	_, err = os.ReadDir(guestsDir)
+	if err != nil && errors.Is(err, fs.ErrNotExist) {
+		log.Fatal(err.Error())
+	}
+
+	storageDir := os.Getenv("STORAGE_POOLS_DIR")
+	_, err = os.ReadDir(storageDir)
+	if err != nil && errors.Is(err, fs.ErrNotExist) {
+		log.Fatal(err.Error())
+	}
+
+	qmpDir := os.Getenv("QMP_DIR")
+	_, err = os.ReadDir(qmpDir)
+	if err != nil && errors.Is(err, fs.ErrNotExist) {
+		log.Fatal(err.Error())
+	}
+
+	vncDir := os.Getenv("VNC_DIR")
+	_, err = os.ReadDir(vncDir)
 	if err != nil && errors.Is(err, fs.ErrNotExist) {
 		log.Fatal(err.Error())
 	}
@@ -80,7 +104,7 @@ func main() {
 
 	r := gin.New()
 
-	swagger, err := adapters.GetSwagger()
+	swagger, err := api.GetSwagger()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -109,25 +133,40 @@ func main() {
 		MaxAge:           24 * time.Hour,
 	}))
 
-	opts := handler.ServerConfig{
-		StorageDir: os.Getenv("STORAGE_DIR"),
-		SocketsDir: os.Getenv("SOCKETS_DIR"),
+	sys := system.Paths{
+		Images:       os.Getenv("IMAGES_DIR"),
+		Guests:       os.Getenv("GUESTS_DIR"),
+		StoragePools: os.Getenv("STORAGE_POOLS_DIR"),
+		QMP:          os.Getenv("QMP_DIR"),
+		VNC:          os.Getenv("VNC_DIR"),
 	}
-	v1Handler := handler.NewV1Handler(opts)
 
-	ginServerOpts := adapters.GinServerOptions{
+	// ToDo: DI ライブラリの導入を検討する
+
+	d1 := file.NewVmDataAccess(sys)
+	d2 := file.NewStorageAccess(sys)
+
+	stat := utils.NewHostStatAccess(&d2)
+	qcow2 := disk.NewQCOW2Disk(&d2, sys)
+
+	u1 := qemu.NewQemuUseCase(&d1, &qcow2, sys)
+	u2 := host.NewHostUseCase(&stat)
+
+	v1Handler := interfaces.NewV1Handler(&u1, &u2)
+
+	ginServerOpts := api.GinServerOptions{
 		ErrorHandler: middleware.GenericErrorHandler,
 	}
 
-	vncHandler := handler.NewVNCHandler(logger, os.Getenv("SOCKETS_DIR"), production)
+	vncHandler := interfaces.NewVNCHandler(logger, os.Getenv("SOCKETS_DIR"), production, &d1)
 	r.GET("/ws/vnc/:vmId", vncHandler.Handler)
 
-	router := adapters.RegisterHandlersWithOptions(r, v1Handler, ginServerOpts)
+	router := api.RegisterHandlersWithOptions(r, v1Handler, ginServerOpts)
 
 	oasRouter := router.Group("/api")
 	oasRouter.Use(oapiMiddleware.OapiRequestValidatorWithOptions(swagger, &validatorOpts))
 
-	if err := router.Run(":8080"); err != nil {
+	if err := router.Run(":4010"); err != nil {
 		log.Fatal(err.Error())
 	}
 }
