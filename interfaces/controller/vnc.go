@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/CharVstack/CharV-backend/interfaces/middleware"
+
 	"github.com/CharVstack/CharV-backend/infrastructure/system"
 	"github.com/CharVstack/CharV-backend/infrastructure/vnc"
-	"github.com/CharVstack/CharV-backend/middleware"
 	"github.com/gamoutatsumi/go-vncproxy"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"

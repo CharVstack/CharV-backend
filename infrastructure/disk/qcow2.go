@@ -22,10 +22,13 @@ func NewQCOW2Disk(q *models.StorageAccess, c system.Paths) models.Disk {
 	}
 }
 
-func (q qcow2) Create(id uuid.UUID) error {
-	// ToDo: `/storage_pools` のファイルから読み取る
-	// 名前を引数にとってパス取得
-	path := filepath.Join("/var/lib/charv/images/", id.String()+".qcow2")
+func (q qcow2) Create(pool string, id uuid.UUID) error {
+	poolPath, err := q.da.Read(pool)
+	if err != nil {
+		return err
+	}
+
+	path := filepath.Join(poolPath.Path, id.String()+".qcow2")
 
 	args := []string{"create", "-f", "qcow2", path, "16G"}
 
@@ -37,9 +40,11 @@ func (q qcow2) Create(id uuid.UUID) error {
 	return nil
 }
 
-func (q qcow2) Delete(id uuid.UUID) error {
-	// ToDo: `/storage_pools` のファイルから読み取る
-	err := os.Remove(filepath.Join("/var/lib/charv/images/", id.String()+".qcow2"))
+func (q qcow2) Delete(pool string, id uuid.UUID) error {
+	poolPath, err := q.da.Read(pool)
+	if err != nil {
+		return err
+	}
 
-	return err
+	return os.Remove(filepath.Join(poolPath.Path, id.String()+".qcow2"))
 }

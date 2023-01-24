@@ -14,6 +14,7 @@ const (
 	UNKNOWN  State = "UNKNOWN"
 )
 
+// VmUseCase provides VM control
 type VmUseCase interface {
 	Create(req entity.VmCore) (entity.Vm, error)
 	ReadAll() ([]entity.Vm, error)
@@ -26,4 +27,13 @@ type VmUseCase interface {
 	Start(id uuid.UUID) error
 	Restart(id uuid.UUID) error
 	Shutdown(id uuid.UUID) error
+}
+
+// VmDataAccess provides access to VM's structure files
+type VmDataAccess interface {
+	Browse() ([]entity.Vm, error)
+	Read(id uuid.UUID) (entity.Vm, error)
+	Edit(id uuid.UUID, vm entity.Vm) (entity.Vm, error)
+	Add(vm entity.Vm) error
+	Delete(id uuid.UUID) error
 }

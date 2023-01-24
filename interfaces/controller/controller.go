@@ -4,9 +4,10 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/CharVstack/CharV-backend/interfaces/middleware"
+
 	"github.com/CharVstack/CharV-backend/api"
 	"github.com/CharVstack/CharV-backend/entity"
-	"github.com/CharVstack/CharV-backend/middleware"
 	usecase "github.com/CharVstack/CharV-backend/usecase/models"
 	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
 	"github.com/gin-gonic/gin"

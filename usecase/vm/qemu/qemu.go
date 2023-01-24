@@ -2,7 +2,6 @@ package qemu
 
 import (
 	"errors"
-	"fmt"
 	"path/filepath"
 	"strconv"
 	"time"
@@ -68,7 +67,7 @@ func (q qemuUseCase) Create(req entity.VmCore) (entity.Vm, error) {
 	}
 
 	// hard disk
-	err = q.disk.Create(id)
+	err = q.disk.Create("default.json", id)
 	if err != nil {
 		return entity.Vm{}, err
 	}
@@ -92,9 +91,8 @@ func (q qemuUseCase) Create(req entity.VmCore) (entity.Vm, error) {
 	// --- run cmd-system-x86_64 command ---
 
 	args := q.genArgs(&vm)
-	fmt.Printf("%v\n", args)
 	if err := q.cmd.Run("qemu-system-x86_64", args); err != nil {
-		_ = q.disk.Delete(id)
+		_ = q.disk.Delete("default.json", id)
 		return entity.Vm{}, err
 	}
 
@@ -146,7 +144,7 @@ func (q qemuUseCase) Delete(id uuid.UUID) error {
 	}
 
 	// Delete disk images
-	err = q.disk.Delete(id)
+	err = q.disk.Delete("default.json", id)
 	if err != nil {
 		return err
 	}
