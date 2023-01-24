@@ -41,12 +41,12 @@ lint: fmt tidy ## Lint Code
 test: testassets ## Run Test
 	go test -v ./...
 
-testassets: test/resources/image/bad.qcow2 test/resources/image/ok.qcow2 ## Generate Test Assets
+testassets: testdata/resources/images/bad.qcow2 testdata/resources/images/ok.qcow2 ## Generate Test Assets
 
-test/resources/image/bad.qcow2:
+testdata/resources/images/bad.qcow2:
 	head -c 1024 /dev/urandom > test/resources/image/bad.qcow2
 
-test/resources/image/ok.qcow2:
+testdata/resources/images/ok.qcow2:
 	qemu-img create -f qcow2 test/resources/image/ok.qcow2 4G
 
 tools: tools/goimports tools/air tools/golangci-lint # Install Tools

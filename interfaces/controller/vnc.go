@@ -1,11 +1,11 @@
-package interfaces
+package controller
 
 import (
 	"fmt"
-	"github.com/CharVstack/CharV-backend/infrastructure/vnc"
-	"github.com/CharVstack/CharV-backend/usecase/models"
 	"net/http"
 
+	"github.com/CharVstack/CharV-backend/infrastructure/system"
+	"github.com/CharVstack/CharV-backend/infrastructure/vnc"
 	"github.com/CharVstack/CharV-backend/middleware"
 	"github.com/gamoutatsumi/go-vncproxy"
 	"github.com/gin-gonic/gin"
@@ -14,10 +14,9 @@ import (
 )
 
 type vncHandler struct {
-	logger     vncproxy.Logger
-	socketsDir string
-	logLevel   uint32
-	da         models.VmDataAccess
+	logger   vncproxy.Logger
+	logLevel uint32
+	path     system.Paths
 }
 
 type vncLogger struct {
@@ -25,23 +24,16 @@ type vncLogger struct {
 }
 
 func (vh *vncHandler) Handler(c *gin.Context) {
-	vmId := c.Param("vmId")
-	vms, err := vh.da.Browse()
-	if err != nil {
-		middleware.GenericErrorHandler(c, err, http.StatusInternalServerError)
+	id := c.Param("vmId")
+
+	isExist := vh.path.Search(system.VNC, id+".sock")
+	if !isExist {
+		middleware.GenericErrorHandler(c, fmt.Errorf("%s is not found", id), http.StatusNotFound)
 		return
 	}
-	var proxy *vncproxy.Proxy
-	for _, vm := range vms {
-		if vmId == vm.ID.String() {
-			proxy = vnc.NewVNCProxy(vmId, vh.logger, vh.socketsDir, vh.logLevel)
-			break
-		}
-	}
-	if proxy == nil {
-		middleware.GenericErrorHandler(c, fmt.Errorf("%s is not found", vmId), http.StatusNotFound)
-		return
-	}
+
+	proxy := vnc.NewVNCProxy(id, vh.logger, vh.path.VNC, vh.logLevel)
+
 	h := websocket.Handler(proxy.ServeWS)
 	h.ServeHTTP(c.Writer, c.Request)
 }
@@ -68,7 +60,7 @@ func newVNCLogger(logger *zap.Logger) *vncLogger {
 	}
 }
 
-func NewVNCHandler(logger *zap.Logger, socketsDir string, isProduction bool, da *models.VmDataAccess) *vncHandler {
+func NewVNCHandler(logger *zap.Logger, path system.Paths, isProduction bool) *vncHandler {
 	vncLogger := newVNCLogger(logger)
 	var logLevel uint32
 	if isProduction {
@@ -77,9 +69,8 @@ func NewVNCHandler(logger *zap.Logger, socketsDir string, isProduction bool, da 
 		logLevel = vncproxy.DebugLevel
 	}
 	return &vncHandler{
-		logger:     vncLogger,
-		socketsDir: socketsDir,
-		logLevel:   logLevel,
-		da:         *da,
+		logger:   vncLogger,
+		logLevel: logLevel,
+		path:     path,
 	}
 }

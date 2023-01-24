@@ -10,128 +10,31 @@
 package main
 
 import (
-	"errors"
-	"flag"
+	"log"
+	"os"
+
+	"github.com/CharVstack/CharV-backend/api"
 	"github.com/CharVstack/CharV-backend/infrastructure/disk"
 	"github.com/CharVstack/CharV-backend/infrastructure/file"
 	"github.com/CharVstack/CharV-backend/infrastructure/system"
 	"github.com/CharVstack/CharV-backend/infrastructure/utils"
-	"github.com/CharVstack/CharV-backend/interfaces"
+	"github.com/CharVstack/CharV-backend/interfaces/controller"
+	"github.com/CharVstack/CharV-backend/interfaces/router"
+	"github.com/CharVstack/CharV-backend/middleware"
 	"github.com/CharVstack/CharV-backend/usecase/host"
 	"github.com/CharVstack/CharV-backend/usecase/vm/qemu"
-	"io/fs"
-	"log"
-	"os"
-	"time"
-
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
-
-	"github.com/CharVstack/CharV-backend/api"
-	"github.com/CharVstack/CharV-backend/middleware"
 	oapiMiddleware "github.com/deepmap/oapi-codegen/pkg/gin-middleware"
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 )
 
 var production bool
 
-func init() {
-	var (
-		configPath = flag.String("c", "/etc/charv/backend.conf", "backend config file path")
-	)
-	flag.Parse()
-
-	err := godotenv.Load(*configPath)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-
-	imagesDir := os.Getenv("IMAGES_DIR")
-	_, err = os.ReadDir(imagesDir)
-	if err != nil && errors.Is(err, fs.ErrNotExist) {
-		log.Fatal(err.Error())
-	}
-
-	guestsDir := os.Getenv("GUESTS_DIR")
-	_, err = os.ReadDir(guestsDir)
-	if err != nil && errors.Is(err, fs.ErrNotExist) {
-		log.Fatal(err.Error())
-	}
-
-	storageDir := os.Getenv("STORAGE_POOLS_DIR")
-	_, err = os.ReadDir(storageDir)
-	if err != nil && errors.Is(err, fs.ErrNotExist) {
-		log.Fatal(err.Error())
-	}
-
-	qmpDir := os.Getenv("QMP_DIR")
-	_, err = os.ReadDir(qmpDir)
-	if err != nil && errors.Is(err, fs.ErrNotExist) {
-		log.Fatal(err.Error())
-	}
-
-	vncDir := os.Getenv("VNC_DIR")
-	_, err = os.ReadDir(vncDir)
-	if err != nil && errors.Is(err, fs.ErrNotExist) {
-		log.Fatal(err.Error())
-	}
-}
-
 func main() {
-	var logger *zap.Logger
-	if production {
-		var err error
-
-		config := zap.NewProductionConfig()
-		config.Encoding = "console"
-		config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
-
-		logger, err = config.Build()
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		gin.SetMode(gin.ReleaseMode)
-	} else {
-		var err error
-		logger, err = zap.NewDevelopmentConfig().Build()
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-
-	r := gin.New()
-
-	swagger, err := api.GetSwagger()
+	logger, err := router.NewLogger(production)
 	if err != nil {
-		log.Fatal(err.Error())
-	}
-	validatorOpts := oapiMiddleware.Options{
-		ErrorHandler: middleware.ValidationErrorHandler,
+		log.Fatal(err)
 	}
 
-	r.Use(gin.Recovery())
-
-	r.Use(middleware.Logger(logger))
-
-	r.Use(cors.New(cors.Config{
-		AllowOrigins: []string{
-			os.Getenv("ORIGIN_URI"),
-		},
-		AllowMethods: []string{
-			"GET",
-			"POST",
-			"OPTIONS",
-			"DELETE",
-		},
-		AllowHeaders: []string{
-			"Content-Type",
-		},
-		AllowCredentials: false,
-		MaxAge:           24 * time.Hour,
-	}))
+	r := router.NewRouter(logger)
 
 	sys := system.Paths{
 		Images:       os.Getenv("IMAGES_DIR"),
@@ -152,21 +55,29 @@ func main() {
 	u1 := qemu.NewQemuUseCase(&d1, &qcow2, sys)
 	u2 := host.NewHostUseCase(&stat)
 
-	v1Handler := interfaces.NewV1Handler(&u1, &u2)
+	v1Handler := controller.NewV1Handler(&u1, &u2)
 
 	ginServerOpts := api.GinServerOptions{
 		ErrorHandler: middleware.GenericErrorHandler,
 	}
 
-	vncHandler := interfaces.NewVNCHandler(logger, os.Getenv("SOCKETS_DIR"), production, &d1)
+	vncHandler := controller.NewVNCHandler(logger, sys, production)
 	r.GET("/ws/vnc/:vmId", vncHandler.Handler)
 
-	router := api.RegisterHandlersWithOptions(r, v1Handler, ginServerOpts)
+	route := api.RegisterHandlersWithOptions(r, v1Handler, ginServerOpts)
 
-	oasRouter := router.Group("/api")
+	swagger, err := api.GetSwagger()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	validatorOpts := oapiMiddleware.Options{
+		ErrorHandler: middleware.ValidationErrorHandler,
+	}
+
+	oasRouter := route.Group("/api")
 	oasRouter.Use(oapiMiddleware.OapiRequestValidatorWithOptions(swagger, &validatorOpts))
 
-	if err := router.Run(":4010"); err != nil {
+	if err := route.Run(":4010"); err != nil {
 		log.Fatal(err.Error())
 	}
 }

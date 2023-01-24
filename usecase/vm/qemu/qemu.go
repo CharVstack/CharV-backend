@@ -3,6 +3,10 @@ package qemu
 import (
 	"errors"
 	"fmt"
+	"path/filepath"
+	"strconv"
+	"time"
+
 	"github.com/CharVstack/CharV-backend/entity"
 	"github.com/CharVstack/CharV-backend/infrastructure/sockets"
 	"github.com/CharVstack/CharV-backend/infrastructure/system"
@@ -10,9 +14,6 @@ import (
 	usecase "github.com/CharVstack/CharV-backend/usecase/models"
 	"github.com/digitalocean/go-qemu/qmp"
 	"github.com/google/uuid"
-	"path/filepath"
-	"strconv"
-	"time"
 )
 
 type qemuUseCase struct {

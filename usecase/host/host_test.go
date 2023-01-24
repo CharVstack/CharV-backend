@@ -1,10 +1,11 @@
 package host
 
 import (
-	"github.com/CharVstack/CharV-backend/entity"
-	"github.com/CharVstack/CharV-backend/usecase/models"
 	"reflect"
 	"testing"
+
+	"github.com/CharVstack/CharV-backend/entity"
+	"github.com/CharVstack/CharV-backend/usecase/models"
 )
 
 type testHostStatAccess struct{}

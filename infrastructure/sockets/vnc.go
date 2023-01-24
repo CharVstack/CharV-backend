@@ -1,11 +1,12 @@
 package sockets
 
 import (
+	"os"
+	"path/filepath"
+
 	"github.com/CharVstack/CharV-backend/infrastructure/system"
 	usecase "github.com/CharVstack/CharV-backend/usecase/models"
 	"github.com/google/uuid"
-	"os"
-	"path/filepath"
 )
 
 type vncSocket struct {

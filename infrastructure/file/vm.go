@@ -2,12 +2,13 @@ package file
 
 import (
 	"encoding/json"
+	"os"
+	"path/filepath"
+
 	"github.com/CharVstack/CharV-backend/entity"
 	"github.com/CharVstack/CharV-backend/infrastructure/system"
 	"github.com/CharVstack/CharV-backend/usecase/models"
 	"github.com/google/uuid"
-	"os"
-	"path/filepath"
 )
 
 type vmDataAccess struct {
@@ -30,7 +31,10 @@ func (v vmDataAccess) Browse() ([]entity.Vm, error) {
 
 	for i, file := range files {
 		name := file.Name()
-		println(len(name))
+		if len(name) != 41 {
+			continue
+		}
+
 		vm, err := v.Read(uuid.Must(uuid.Parse(name[:36])))
 		if err != nil {
 			return vms, err
@@ -71,10 +75,7 @@ func (v vmDataAccess) Add(vm entity.Vm) error {
 		return err
 	}
 	defer func(f *os.File) {
-		err := f.Close()
-		if err != nil {
-
-		}
+		_ = f.Close()
 	}(f)
 
 	d, err := json.Marshal(vm)

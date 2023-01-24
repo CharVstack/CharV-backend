@@ -1,13 +1,14 @@
 package sockets
 
 import (
+	"os"
+	"path/filepath"
+	"time"
+
 	"github.com/CharVstack/CharV-backend/infrastructure/system"
 	usecase "github.com/CharVstack/CharV-backend/usecase/models"
 	"github.com/digitalocean/go-qemu/qmp"
 	"github.com/google/uuid"
-	"os"
-	"path/filepath"
-	"time"
 )
 
 type qmpSocket struct {
@@ -15,7 +16,7 @@ type qmpSocket struct {
 }
 
 func NewQMPSocket(p system.Paths) usecase.Socket {
-	return &qmpSocket{
+	return qmpSocket{
 		path: p,
 	}
 }

@@ -1,12 +1,13 @@
 package utils
 
 import (
+	"os"
+
 	"github.com/CharVstack/CharV-backend/entity"
 	"github.com/CharVstack/CharV-backend/usecase/models"
 	"github.com/shirou/gopsutil/v3/cpu"
 	"github.com/shirou/gopsutil/v3/disk"
 	"github.com/shirou/gopsutil/v3/mem"
-	"os"
 )
 
 type hostStatAccess struct {
@@ -61,7 +62,7 @@ func (h hostStatAccess) GetStoragePools() ([]entity.StoragePool, error) {
 	for i, s := range storages {
 		// status
 		f, err := isExistPool(s.Path)
-		if err != nil || f == false {
+		if err != nil || !f {
 			pools[i] = entity.StoragePool{
 				Name:   s.Name,
 				Path:   s.Path,

@@ -1,7 +1,9 @@
-package interfaces
+package controller
 
 import (
 	"errors"
+	"net/http"
+
 	"github.com/CharVstack/CharV-backend/api"
 	"github.com/CharVstack/CharV-backend/entity"
 	"github.com/CharVstack/CharV-backend/middleware"
@@ -9,7 +11,6 @@ import (
 	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"net/http"
 )
 
 type V1Handler struct {
@@ -89,7 +90,6 @@ func (v V1Handler) PostApiV1Vms(c *gin.Context) {
 func (v V1Handler) PatchApiV1VmsVmId(c *gin.Context, vmId openapi_types.UUID) {
 	//TODO implement me
 	middleware.GenericErrorHandler(c, errors.New("implement me"), http.StatusInternalServerError)
-	return
 }
 
 func (v V1Handler) DeleteApiV1VmsVmId(c *gin.Context, vmId openapi_types.UUID) {
@@ -196,7 +196,6 @@ func vmTransformer(vm entity.Vm) api.Vm {
 		},
 		Memory: vm.Memory,
 		Metadata: api.Metadata{
-			// ToDo: id が正常に入れられてない
 			Id:         vm.ID,
 			ApiVersion: "v1",
 		},

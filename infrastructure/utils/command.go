@@ -1,8 +1,9 @@
 package utils
 
 import (
-	"github.com/CharVstack/CharV-backend/usecase/models"
 	"os/exec"
+
+	"github.com/CharVstack/CharV-backend/usecase/models"
 )
 
 type cmd struct{}
