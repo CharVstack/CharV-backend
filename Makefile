@@ -61,5 +61,5 @@ $(BINARIES): $(GO_FILES) VERSION .git/HEAD
 	@go build $(GOFLAGS) -o $@ $(GO_BUILD) $(@:$(BINDIR)/%=$(ROOT_PACKAGE)/cmd/%)
 
 
-coverage: testassets tools # Generate Coverage
+coverage: tools # Generate Coverage
 	go test -cover -coverprofile=coverage.out ./...
