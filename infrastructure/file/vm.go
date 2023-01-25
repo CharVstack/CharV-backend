@@ -92,6 +92,5 @@ func (v vmDataAccess) Add(vm entity.Vm) error {
 }
 
 func (v vmDataAccess) Delete(id uuid.UUID) error {
-	println(filepath.Join(v.path.Guests, id.String()+".json"))
 	return os.Remove(filepath.Join(v.path.Guests, id.String()+".json"))
 }
