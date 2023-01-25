@@ -33,7 +33,7 @@ func (vh *vncHandler) Handler(c *gin.Context) {
 		return
 	}
 
-	proxy := vnc.NewVNCProxy(id, vh.logger, vh.path.VNC, vh.logLevel)
+	proxy := vnc.NewVNCProxy(id, vh.logger, vh.path, vh.logLevel)
 
 	h := websocket.Handler(proxy.ServeWS)
 	h.ServeHTTP(c.Writer, c.Request)
