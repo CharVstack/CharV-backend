@@ -2,6 +2,7 @@ package qemu
 
 import (
 	"errors"
+	"fmt"
 	"path/filepath"
 	"strconv"
 	"time"
@@ -125,18 +126,24 @@ func (q qemuUseCase) ReadById(id uuid.UUID) (entity.Vm, error) {
 	return vm, nil
 }
 
-func (q qemuUseCase) Update(id uuid.UUID, vm entity.Vm) (entity.Vm, error) {
-	vm, err := q.da.Edit(id, vm)
+func (q qemuUseCase) Update(id uuid.UUID, vm entity.VmCore) (entity.Vm, error) {
+	state := q.GetPower(id)
+	if state == usecase.RUNNING {
+		return entity.Vm{}, fmt.Errorf("Vm (%s) is still running", id.String())
+	}
+	newVm, err := q.da.Edit(id, vm)
 	if err != nil {
 		return entity.Vm{}, err
 	}
 
-	return vm, nil
+	return newVm, nil
 }
 
 func (q qemuUseCase) Delete(id uuid.UUID) error {
-	// ToDo: 先にファイルがあるか確認してから削除する
-
+	state := q.GetPower(id)
+	if state == usecase.RUNNING {
+		return fmt.Errorf("Vm (%s) is still running", id.String())
+	}
 	// Delete the guest constructor file
 	err := q.da.Delete(id)
 	if err != nil {

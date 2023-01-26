@@ -62,7 +62,14 @@ func (s vncSocket) Send(data []byte) error {
 
 func (s vncSocket) Delete(id uuid.UUID) error {
 	path := filepath.Join(s.path.VNC, id.String()+".sock")
-	err := os.Remove(path)
 
-	return err
+	if _, err := os.Stat(path); err != nil {
+		return err
+	}
+
+	if err := os.Remove(path); err != nil {
+		return err
+	}
+
+	return nil
 }

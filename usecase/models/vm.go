@@ -19,7 +19,7 @@ type VmUseCase interface {
 	Create(req entity.VmCore) (entity.Vm, error)
 	ReadAll() ([]entity.Vm, error)
 	ReadById(id uuid.UUID) (entity.Vm, error)
-	Update(id uuid.UUID, vm entity.Vm) (entity.Vm, error)
+	Update(id uuid.UUID, vm entity.VmCore) (entity.Vm, error)
 	Delete(id uuid.UUID) error
 
 	// Power
@@ -33,7 +33,7 @@ type VmUseCase interface {
 type VmDataAccess interface {
 	Browse() ([]entity.Vm, error)
 	Read(id uuid.UUID) (entity.Vm, error)
-	Edit(id uuid.UUID, vm entity.Vm) (entity.Vm, error)
+	Edit(id uuid.UUID, vm entity.VmCore) (entity.Vm, error)
 	Add(vm entity.Vm) error
 	Delete(id uuid.UUID) error
 }

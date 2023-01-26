@@ -1,11 +1,13 @@
 package disk
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 
 	"github.com/CharVstack/CharV-backend/infrastructure/system"
+	"github.com/CharVstack/CharV-backend/interfaces/errors"
 	"github.com/CharVstack/CharV-backend/usecase/models"
 	"github.com/google/uuid"
 )
@@ -40,11 +42,15 @@ func (q qcow2) Create(pool string, id uuid.UUID) error {
 	return nil
 }
 
-func (q qcow2) Delete(pool string, id uuid.UUID) error {
-	poolPath, err := q.da.Read(pool)
+func (q qcow2) Delete(poolName string, id uuid.UUID) error {
+	pool, err := q.da.Read(poolName)
 	if err != nil {
 		return err
 	}
+	path := filepath.Join(pool.Path, id.String()+".qcow2")
+	if _, err := os.Stat(path); err != nil {
+		return errors.NotFound.Wrap(err, fmt.Sprintf("%s is not found", path))
+	}
 
-	return os.Remove(filepath.Join(poolPath.Path, id.String()+".qcow2"))
+	return os.Remove(path)
 }

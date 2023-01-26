@@ -1,11 +1,13 @@
 package sockets
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"time"
 
 	"github.com/CharVstack/CharV-backend/infrastructure/system"
+	"github.com/CharVstack/CharV-backend/interfaces/errors"
 	usecase "github.com/CharVstack/CharV-backend/usecase/models"
 	"github.com/digitalocean/go-qemu/qmp"
 	"github.com/google/uuid"
@@ -70,7 +72,12 @@ func (s qmpSocket) Send(data []byte) error {
 
 func (s qmpSocket) Delete(id uuid.UUID) error {
 	path := filepath.Join(s.path.QMP, id.String()+".sock")
-	err := os.Remove(path)
+	if _, err := os.Stat(path); err != nil {
+		return errors.NotFound.Wrap(err, fmt.Sprintf("%s is not found", path))
+	}
+	if err := os.Remove(path); err != nil {
+		return err
+	}
 
-	return err
+	return nil
 }
