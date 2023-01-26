@@ -38,16 +38,8 @@ fmt: tools ## Format Code
 lint: fmt tidy ## Lint Code
 	tools/golangci-lint run -E unparam
 
-test: testassets ## Run Test
+test: ## Run Test
 	go test -v ./...
-
-testassets: test/resources/image/bad.qcow2 test/resources/image/ok.qcow2 ## Generate Test Assets
-
-test/resources/image/bad.qcow2:
-	head -c 1024 /dev/urandom > test/resources/image/bad.qcow2
-
-test/resources/image/ok.qcow2:
-	qemu-img create -f qcow2 test/resources/image/ok.qcow2 4G
 
 tools: tools/goimports tools/air tools/golangci-lint # Install Tools
 
@@ -69,5 +61,5 @@ $(BINARIES): $(GO_FILES) VERSION .git/HEAD
 	@go build $(GOFLAGS) -o $@ $(GO_BUILD) $(@:$(BINDIR)/%=$(ROOT_PACKAGE)/cmd/%)
 
 
-coverage: testassets tools # Generate Coverage
+coverage: tools # Generate Coverage
 	go test -cover -coverprofile=coverage.out ./...

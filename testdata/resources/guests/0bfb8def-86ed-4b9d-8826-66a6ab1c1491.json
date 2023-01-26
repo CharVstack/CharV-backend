@@ -1,0 +1,25 @@
+{
+    "name": "ubuntu",
+    "memory": 1024,
+    "cpu": 1,
+    "id": "0bfb8def-86ed-4b9d-8826-66a6ab1c1491",
+    "devices": {
+        "os": {
+            "name": "ubuntu-20.04.5-live-server-amd64.iso",
+            "pool": "default",
+            "type": "iso",
+            "device": "cdrom"
+        },
+        "disk": [
+            {
+                "name": "0bfb8def-86ed-4b9d-8826-66a6ab1c1491",
+                "pool": "default",
+                "type": "qcow2",
+                "device": "disk"
+            }
+        ]
+    },
+    "boot": "disk",
+    "virtualization": "kvm",
+    "daemonize": true
+}
