@@ -33,21 +33,18 @@ tidy: ## Optimize go.mod and go.sum
 	go mod tidy
 
 fmt: tools ## Format Code
-	tools/goimports -w ./
+	tools/golangci-lint run --disable-all -E gci --fix
 
 lint: fmt tidy ## Lint Code
-	tools/golangci-lint run -E unparam
+	tools/golangci-lint run -E unparam --fix
 
 test: ## Run Test
 	go test -v ./...
 
-tools: tools/goimports tools/air tools/golangci-lint # Install Tools
+tools: tools/air tools/golangci-lint # Install Tools
 
 tools/golangci-lint:
 	GOBIN=$(GOBIN) go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
-
-tools/goimports:
-	GOBIN=$(GOBIN) go install golang.org/x/tools/cmd/goimports@v0.3.0
 
 tools/air:
 	GOBIN=$(GOBIN) go install github.com/cosmtrek/air@v1.40.4

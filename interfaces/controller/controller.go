@@ -1,13 +1,12 @@
 package controller
 
 import (
-	"errors"
 	"net/http"
-
-	"github.com/CharVstack/CharV-backend/interfaces/middleware"
 
 	"github.com/CharVstack/CharV-backend/api"
 	"github.com/CharVstack/CharV-backend/entity"
+	"github.com/CharVstack/CharV-backend/interfaces/errors"
+	"github.com/CharVstack/CharV-backend/interfaces/middleware"
 	usecase "github.com/CharVstack/CharV-backend/usecase/models"
 	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
 	"github.com/gin-gonic/gin"
@@ -60,7 +59,12 @@ func (v V1Handler) GetApiV1VmsVmId(c *gin.Context, vmId openapi_types.UUID) {
 	vm, err := v.vmUseCase.ReadById(vmId)
 
 	if err != nil {
-		middleware.GenericErrorHandler(c, err, http.StatusInternalServerError)
+		switch errors.GetType(err) {
+		case errors.NotFound:
+			middleware.GenericErrorHandler(c, err, http.StatusNotFound)
+		default:
+			middleware.GenericErrorHandler(c, err, http.StatusInternalServerError)
+		}
 		return
 	}
 
@@ -90,14 +94,19 @@ func (v V1Handler) PostApiV1Vms(c *gin.Context) {
 
 func (v V1Handler) PatchApiV1VmsVmId(c *gin.Context, vmId openapi_types.UUID) {
 	//TODO implement me
-	middleware.GenericErrorHandler(c, errors.New("implement me"), http.StatusInternalServerError)
+	middleware.GenericErrorHandler(c, errors.Unknown.New("implement me"), http.StatusInternalServerError)
 }
 
 func (v V1Handler) DeleteApiV1VmsVmId(c *gin.Context, vmId openapi_types.UUID) {
 	err := v.vmUseCase.Delete(vmId)
 
 	if err != nil {
-		middleware.GenericErrorHandler(c, err, http.StatusInternalServerError)
+		switch errors.GetType(err) {
+		case errors.NotFound:
+			middleware.GenericErrorHandler(c, err, http.StatusNotFound)
+		default:
+			middleware.GenericErrorHandler(c, err, http.StatusInternalServerError)
+		}
 		return
 	}
 

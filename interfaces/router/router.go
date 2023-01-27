@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/CharVstack/CharV-backend/interfaces/middleware"
-
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
