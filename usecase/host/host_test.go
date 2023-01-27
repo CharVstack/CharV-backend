@@ -1,57 +1,42 @@
 package host
 
 import (
+	"github.com/CharVstack/CharV-backend/entity"
+	mock_models "github.com/CharVstack/CharV-backend/usecase/models/mocks"
+	"github.com/golang/mock/gomock"
 	"reflect"
 	"testing"
-
-	"github.com/CharVstack/CharV-backend/entity"
-	"github.com/CharVstack/CharV-backend/usecase/models"
 )
 
-type testHostStatAccess struct{}
-
-func (t testHostStatAccess) GetCpu() (entity.Cpu, error) {
-	return entity.Cpu{
-		Counts:  2,
-		Percent: 33.4,
-	}, nil
-}
-
-func (t testHostStatAccess) GetMem() (entity.Memory, error) {
-	return entity.Memory{
-		Free:    16,
-		Percent: 50,
-		Total:   32,
-		Used:    16,
-	}, nil
-}
-
-func (t testHostStatAccess) GetStoragePools() ([]entity.StoragePool, error) {
-	return []entity.StoragePool{
-		{
-			Name:      "default",
-			Path:      "/var/lig/libvirt/images",
-			Status:    entity.ACTIVE,
-			TotalSize: 1006530654208,
-			UsedSize:  371360915456,
-		},
-	}, nil
-}
-
 func Test_hostUseCase_Get(t *testing.T) {
-	type fields struct {
-		hostStatAccess models.HostStatAccess
-	}
 	tests := []struct {
 		name    string
-		fields  fields
+		mock    func(m *mock_models.MockHostStatAccess)
 		want    entity.Host
 		wantErr bool
 	}{
 		{
-			name: "PASS_01",
-			fields: fields{
-				hostStatAccess: testHostStatAccess{},
+			name: "PASS01",
+			mock: func(m *mock_models.MockHostStatAccess) {
+				m.EXPECT().GetCpu().Return(entity.Cpu{
+					Counts:  2,
+					Percent: 33.4,
+				}, nil)
+				m.EXPECT().GetMem().Return(entity.Memory{
+					Free:    16,
+					Percent: 50,
+					Total:   32,
+					Used:    16,
+				}, nil)
+				m.EXPECT().GetStoragePools().Return([]entity.StoragePool{
+					{
+						Name:      "default",
+						Path:      "/var/lig/libvirt/images",
+						Status:    "ACTIVE",
+						TotalSize: 1006530654208,
+						UsedSize:  371360915456,
+					},
+				}, nil)
 			},
 			want: entity.Host{
 				Cpu: entity.Cpu{
@@ -79,8 +64,14 @@ func Test_hostUseCase_Get(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			m := mock_models.NewMockHostStatAccess(ctrl)
+			tt.mock(m)
+
 			h := hostUseCase{
-				hostStatAccess: tt.fields.hostStatAccess,
+				hostStatAccess: m,
 			}
 			got, err := h.Get()
 			if (err != nil) != tt.wantErr {
