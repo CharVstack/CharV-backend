@@ -51,8 +51,9 @@ func GetType(err error) ErrorType {
 	for {
 		if e, ok := err.(typeGetter); ok {
 			return e.Type()
+		} else {
+			break
 		}
-		break
 	}
 	return Unknown
 }

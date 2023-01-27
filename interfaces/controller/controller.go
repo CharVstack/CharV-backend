@@ -3,11 +3,10 @@ package controller
 import (
 	"net/http"
 
-	"github.com/CharVstack/CharV-backend/interfaces/middleware"
-
 	"github.com/CharVstack/CharV-backend/api"
 	"github.com/CharVstack/CharV-backend/entity"
 	"github.com/CharVstack/CharV-backend/interfaces/errors"
+	"github.com/CharVstack/CharV-backend/interfaces/middleware"
 	usecase "github.com/CharVstack/CharV-backend/usecase/models"
 	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
 	"github.com/gin-gonic/gin"
@@ -63,10 +62,8 @@ func (v V1Handler) GetApiV1VmsVmId(c *gin.Context, vmId openapi_types.UUID) {
 		switch errors.GetType(err) {
 		case errors.NotFound:
 			middleware.GenericErrorHandler(c, err, http.StatusNotFound)
-			break
 		default:
 			middleware.GenericErrorHandler(c, err, http.StatusInternalServerError)
-			break
 		}
 		return
 	}
@@ -107,10 +104,8 @@ func (v V1Handler) DeleteApiV1VmsVmId(c *gin.Context, vmId openapi_types.UUID) {
 		switch errors.GetType(err) {
 		case errors.NotFound:
 			middleware.GenericErrorHandler(c, err, http.StatusNotFound)
-			break
 		default:
 			middleware.GenericErrorHandler(c, err, http.StatusInternalServerError)
-			break
 		}
 		return
 	}
