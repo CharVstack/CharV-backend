@@ -79,7 +79,7 @@ func (mr *MockVmDataAccessMockRecorder) Delete(arg0 interface{}) *gomock.Call {
 }
 
 // Edit mocks base method.
-func (m *MockVmDataAccess) Edit(arg0 uuid.UUID, arg1 entity.Vm) (entity.Vm, error) {
+func (m *MockVmDataAccess) Edit(arg0 uuid.UUID, arg1 entity.VmCore) (entity.Vm, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Edit", arg0, arg1)
 	ret0, _ := ret[0].(entity.Vm)

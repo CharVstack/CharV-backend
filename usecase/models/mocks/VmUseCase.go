@@ -152,7 +152,7 @@ func (mr *MockVmUseCaseMockRecorder) Start(arg0 interface{}) *gomock.Call {
 }
 
 // Update mocks base method.
-func (m *MockVmUseCase) Update(arg0 uuid.UUID, arg1 entity.Vm) (entity.Vm, error) {
+func (m *MockVmUseCase) Update(arg0 uuid.UUID, arg1 entity.VmCore) (entity.Vm, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", arg0, arg1)
 	ret0, _ := ret[0].(entity.Vm)
