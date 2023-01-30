@@ -351,3 +351,169 @@ func Test_qemuUseCase_ReadById(t *testing.T) {
 		})
 	}
 }
+
+func Test_qemuUseCase_Update(t *testing.T) {
+	id := uuid.Must(uuid.Parse("0bfb8def-86ed-4b9d-8826-66a6ab1c1491"))
+
+	type fields struct {
+		da  func(m *mock_models.MockVmDataAccess)
+		vnc func(m *mock_models.MockSocket)
+	}
+	type args struct {
+		id uuid.UUID
+		vm entity.VmCore
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    entity.Vm
+		wantErr bool
+	}{
+		{
+			name: "PASS01",
+			fields: fields{
+				da: func(m *mock_models.MockVmDataAccess) {
+					m.EXPECT().Edit(id, entity.VmCore{
+						Cpu:    2,
+						Memory: 1024,
+						Name:   "ubuntu",
+					}).Return(entity.Vm{
+						VmCore: entity.VmCore{
+							Cpu:    2,
+							Memory: 1024,
+							Name:   "ubuntu",
+						},
+						ID: uuid.Must(uuid.Parse("0bfb8def-86ed-4b9d-8826-66a6ab1c1491")),
+						Devices: entity.Devices{
+							OS: entity.Disk{
+								Device: entity.DiskDeviceCdrom,
+								Name:   "ubuntu-20.04.5-live-server-amd64.iso",
+								Pool:   "default",
+								Type:   entity.DiskTypeIso,
+							},
+							Disk: []entity.Disk{
+								{
+									Device: entity.DiskDeviceDisk,
+									Name:   "0bfb8def-86ed-4b9d-8826-66a6ab1c1491",
+									Pool:   "default",
+									Type:   entity.DiskTypeQcow2,
+								},
+							},
+						},
+						Boot:           entity.BootDeviceDisk,
+						Virtualization: entity.VirtualizationTypeKvm,
+						Daemonize:      true,
+					}, nil)
+				},
+				vnc: func(m *mock_models.MockSocket) {
+					m.EXPECT().SearchFor(id).Return(false)
+				},
+			},
+			args: args{
+				id: id,
+				vm: entity.VmCore{
+					Cpu:    2,
+					Memory: 1024,
+					Name:   "ubuntu",
+				},
+			},
+			want: entity.Vm{
+				VmCore: entity.VmCore{
+					Cpu:    2,
+					Memory: 1024,
+					Name:   "ubuntu",
+				},
+				ID: uuid.Must(uuid.Parse("0bfb8def-86ed-4b9d-8826-66a6ab1c1491")),
+				Devices: entity.Devices{
+					OS: entity.Disk{
+						Device: entity.DiskDeviceCdrom,
+						Name:   "ubuntu-20.04.5-live-server-amd64.iso",
+						Pool:   "default",
+						Type:   entity.DiskTypeIso,
+					},
+					Disk: []entity.Disk{
+						{
+							Device: entity.DiskDeviceDisk,
+							Name:   "0bfb8def-86ed-4b9d-8826-66a6ab1c1491",
+							Pool:   "default",
+							Type:   entity.DiskTypeQcow2,
+						},
+					},
+				},
+				Boot:           entity.BootDeviceDisk,
+				Virtualization: entity.VirtualizationTypeKvm,
+				Daemonize:      true,
+			},
+			wantErr: false,
+		},
+		{
+			name: "FAIL01",
+			fields: fields{
+				da: func(m *mock_models.MockVmDataAccess) {},
+				vnc: func(m *mock_models.MockSocket) {
+					m.EXPECT().SearchFor(id).Return(true)
+				},
+			},
+			args: args{
+				id: id,
+				vm: entity.VmCore{
+					Cpu:    2,
+					Memory: 1024,
+					Name:   "ubuntu",
+				},
+			},
+			want:    entity.Vm{},
+			wantErr: true,
+		},
+		{
+			name: "FAIL02",
+			fields: fields{
+				da: func(m *mock_models.MockVmDataAccess) {
+					m.EXPECT().Edit(id, entity.VmCore{
+						Cpu:    2,
+						Memory: 1024,
+						Name:   "ubuntu",
+					}).Return(entity.Vm{}, errors.New("something wrong"))
+				},
+				vnc: func(m *mock_models.MockSocket) {
+					m.EXPECT().SearchFor(id).Return(false)
+				},
+			},
+			args: args{
+				id: id,
+				vm: entity.VmCore{
+					Cpu:    2,
+					Memory: 1024,
+					Name:   "ubuntu",
+				},
+			},
+			want:    entity.Vm{},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			da := mock_models.NewMockVmDataAccess(ctrl)
+			vnc := mock_models.NewMockSocket(ctrl)
+			tt.fields.da(da)
+			tt.fields.vnc(vnc)
+
+			q := qemuUseCase{
+				da:  da,
+				vnc: vnc,
+			}
+			got, err := q.Update(tt.args.id, tt.args.vm)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Update() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Update() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
