@@ -517,3 +517,152 @@ func Test_qemuUseCase_Update(t *testing.T) {
 		})
 	}
 }
+
+func Test_qemuUseCase_Delete(t *testing.T) {
+	id := uuid.Must(uuid.Parse("0bfb8def-86ed-4b9d-8826-66a6ab1c1491"))
+
+	type fields struct {
+		da   func(m *mock_models.MockVmDataAccess)
+		disk func(m *mock_models.MockDisk)
+		vnc  func(m *mock_models.MockSocket)
+		qmp  func(m *mock_models.MockSocket)
+	}
+	type args struct {
+		id uuid.UUID
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "PASS01",
+			fields: fields{
+				da: func(m *mock_models.MockVmDataAccess) {
+					m.EXPECT().Delete(id).Return(nil)
+				},
+				disk: func(m *mock_models.MockDisk) {
+					m.EXPECT().Delete("default.json", id).Return(nil)
+				},
+				vnc: func(m *mock_models.MockSocket) {
+					m.EXPECT().SearchFor(id).Return(false)
+					m.EXPECT().Delete(id).Return(nil)
+				},
+				qmp: func(m *mock_models.MockSocket) {
+					m.EXPECT().Delete(id).Return(nil)
+				},
+			},
+			args:    args{id: id},
+			wantErr: false,
+		},
+		{
+			name: "FAIL01",
+			fields: fields{
+				da:   func(m *mock_models.MockVmDataAccess) {},
+				disk: func(m *mock_models.MockDisk) {},
+				vnc: func(m *mock_models.MockSocket) {
+					m.EXPECT().SearchFor(id).Return(true)
+				},
+				qmp: func(m *mock_models.MockSocket) {},
+			},
+			args:    args{id: id},
+			wantErr: true,
+		},
+		{
+			name: "FAIL02",
+			fields: fields{
+				da: func(m *mock_models.MockVmDataAccess) {
+					m.EXPECT().Delete(id).Return(errors.New("something wrong"))
+				},
+				disk: func(m *mock_models.MockDisk) {},
+				vnc: func(m *mock_models.MockSocket) {
+					m.EXPECT().SearchFor(id).Return(false)
+				},
+				qmp: func(m *mock_models.MockSocket) {},
+			},
+			args:    args{id: id},
+			wantErr: true,
+		},
+		{
+			name: "FAIL03",
+			fields: fields{
+				da: func(m *mock_models.MockVmDataAccess) {
+					m.EXPECT().Delete(id).Return(nil)
+				},
+				disk: func(m *mock_models.MockDisk) {
+					m.EXPECT().Delete("default.json", id).Return(errors.New("something wrong"))
+				},
+				vnc: func(m *mock_models.MockSocket) {
+					m.EXPECT().SearchFor(id).Return(false)
+				},
+				qmp: func(m *mock_models.MockSocket) {},
+			},
+			args:    args{id: id},
+			wantErr: true,
+		},
+		{
+			name: "FAIL04",
+			fields: fields{
+				da: func(m *mock_models.MockVmDataAccess) {
+					m.EXPECT().Delete(id).Return(nil)
+				},
+				disk: func(m *mock_models.MockDisk) {
+					m.EXPECT().Delete("default.json", id).Return(nil)
+				},
+				vnc: func(m *mock_models.MockSocket) {
+					m.EXPECT().SearchFor(id).Return(false)
+					m.EXPECT().Delete(id).Return(errors.New("something wrong"))
+				},
+				qmp: func(m *mock_models.MockSocket) {},
+			},
+			args:    args{id: id},
+			wantErr: true,
+		},
+		{
+			name: "FAIL05",
+			fields: fields{
+				da: func(m *mock_models.MockVmDataAccess) {
+					m.EXPECT().Delete(id).Return(nil)
+				},
+				disk: func(m *mock_models.MockDisk) {
+					m.EXPECT().Delete("default.json", id).Return(nil)
+				},
+				vnc: func(m *mock_models.MockSocket) {
+					m.EXPECT().SearchFor(id).Return(false)
+					m.EXPECT().Delete(id).Return(nil)
+				},
+				qmp: func(m *mock_models.MockSocket) {
+					m.EXPECT().Delete(id).Return(errors.New("something wrong"))
+				},
+			},
+			args:    args{id: id},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			da := mock_models.NewMockVmDataAccess(ctrl)
+			disk := mock_models.NewMockDisk(ctrl)
+			vnc := mock_models.NewMockSocket(ctrl)
+			qmp := mock_models.NewMockSocket(ctrl)
+			tt.fields.da(da)
+			tt.fields.disk(disk)
+			tt.fields.vnc(vnc)
+			tt.fields.qmp(qmp)
+
+			q := qemuUseCase{
+				da:   da,
+				disk: disk,
+				vnc:  vnc,
+				qmp:  qmp,
+			}
+			if err := q.Delete(tt.args.id); (err != nil) != tt.wantErr {
+				t.Errorf("Delete() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
