@@ -11,6 +11,37 @@ import (
 	"github.com/google/uuid"
 )
 
+var (
+	testVM = entity.Vm{
+		VmCore: entity.VmCore{
+			Cpu:    2,
+			Memory: 1024,
+			Name:   "ubuntu",
+		},
+		ID: uuid.Must(uuid.Parse("0bfb8def-86ed-4b9d-8826-66a6ab1c1491")),
+		Devices: entity.Devices{
+			OS: entity.Disk{
+				Device: entity.DiskDeviceCdrom,
+				Name:   "ubuntu-20.04.5-live-server-amd64.iso",
+				Pool:   "default",
+				Type:   entity.DiskTypeIso,
+			},
+			Disk: []entity.Disk{
+				{
+					Device: entity.DiskDeviceDisk,
+					Name:   "0bfb8def-86ed-4b9d-8826-66a6ab1c1491",
+					Pool:   "default",
+					Type:   entity.DiskTypeQcow2,
+				},
+			},
+		},
+		Boot:           entity.BootDeviceDisk,
+		Virtualization: entity.VirtualizationTypeKvm,
+		Daemonize:      true,
+	}
+	id = uuid.Must(uuid.Parse("0bfb8def-86ed-4b9d-8826-66a6ab1c1491"))
+)
+
 func Test_qemuUseCase_Create(t *testing.T) {
 	type fields struct {
 		da   func(m *mock_models.MockVmDataAccess)
@@ -32,42 +63,16 @@ func Test_qemuUseCase_Create(t *testing.T) {
 			name: "PASS01",
 			fields: fields{
 				da: func(m *mock_models.MockVmDataAccess) {
-					m.EXPECT().Add(entity.Vm{
-						VmCore: entity.VmCore{
-							Cpu:    2,
-							Memory: 1024,
-							Name:   "ubuntu",
-						},
-						ID: uuid.Must(uuid.Parse("0bfb8def-86ed-4b9d-8826-66a6ab1c1491")),
-						Devices: entity.Devices{
-							OS: entity.Disk{
-								Device: entity.DiskDeviceCdrom,
-								Name:   "ubuntu-20.04.5-live-server-amd64.iso",
-								Pool:   "default",
-								Type:   entity.DiskTypeIso,
-							},
-							Disk: []entity.Disk{
-								{
-									Device: entity.DiskDeviceDisk,
-									Name:   "0bfb8def-86ed-4b9d-8826-66a6ab1c1491",
-									Pool:   "default",
-									Type:   entity.DiskTypeQcow2,
-								},
-							},
-						},
-						Boot:           entity.BootDeviceDisk,
-						Virtualization: entity.VirtualizationTypeKvm,
-						Daemonize:      true,
-					}).Return(nil)
+					m.EXPECT().Add(testVM).Return(nil)
 				},
 				id: func(m *mock_models.MockID) {
-					m.EXPECT().GenID().Return(uuid.Must(uuid.Parse("0bfb8def-86ed-4b9d-8826-66a6ab1c1491")), nil)
+					m.EXPECT().GenID().Return(id, nil)
 				},
 				cmd: func(m *mock_models.MockCommand) {
 					m.EXPECT().Run("qemu-system-x86_64", []string{"-name", "ubuntu", "-m", "1024", "-smp", "2", "-drive", "file=/var/lib/charv/images/0bfb8def-86ed-4b9d-8826-66a6ab1c1491.qcow2,format=qcow2", "-cdrom", "/var/lib/charv/images/ubuntu-20.04.5-live-server-amd64.iso", "-boot", "order=d", "-qmp", "unix:/0bfb8def-86ed-4b9d-8826-66a6ab1c1491.sock,server,nowait", "-vnc", "unix:/0bfb8def-86ed-4b9d-8826-66a6ab1c1491.sock", "-accel", "kvm", "-daemonize"}).Return(nil)
 				},
 				disk: func(m *mock_models.MockDisk) {
-					m.EXPECT().Create("default.json", uuid.Must(uuid.Parse("0bfb8def-86ed-4b9d-8826-66a6ab1c1491"))).Return(nil)
+					m.EXPECT().Create("default.json", id).Return(nil)
 				},
 			},
 			args: args{req: entity.VmCore{
@@ -75,33 +80,7 @@ func Test_qemuUseCase_Create(t *testing.T) {
 				Memory: 1024,
 				Name:   "ubuntu",
 			}},
-			want: entity.Vm{
-				VmCore: entity.VmCore{
-					Cpu:    2,
-					Memory: 1024,
-					Name:   "ubuntu",
-				},
-				ID: uuid.Must(uuid.Parse("0bfb8def-86ed-4b9d-8826-66a6ab1c1491")),
-				Devices: entity.Devices{
-					OS: entity.Disk{
-						Device: entity.DiskDeviceCdrom,
-						Name:   "ubuntu-20.04.5-live-server-amd64.iso",
-						Pool:   "default",
-						Type:   entity.DiskTypeIso,
-					},
-					Disk: []entity.Disk{
-						{
-							Device: entity.DiskDeviceDisk,
-							Name:   "0bfb8def-86ed-4b9d-8826-66a6ab1c1491",
-							Pool:   "default",
-							Type:   entity.DiskTypeQcow2,
-						},
-					},
-				},
-				Boot:           entity.BootDeviceDisk,
-				Virtualization: entity.VirtualizationTypeKvm,
-				Daemonize:      true,
-			},
+			want:    testVM,
 			wantErr: false,
 		},
 	}
@@ -151,63 +130,11 @@ func Test_qemuUseCase_ReadAll(t *testing.T) {
 			name: "PASS01",
 			fields: fields{da: func(m *mock_models.MockVmDataAccess) {
 				m.EXPECT().Browse().Return([]entity.Vm{
-					{
-						VmCore: entity.VmCore{
-							Cpu:    2,
-							Memory: 1024,
-							Name:   "ubuntu",
-						},
-						ID: uuid.Must(uuid.Parse("0bfb8def-86ed-4b9d-8826-66a6ab1c1491")),
-						Devices: entity.Devices{
-							OS: entity.Disk{
-								Device: entity.DiskDeviceCdrom,
-								Name:   "ubuntu-20.04.5-live-server-amd64.iso",
-								Pool:   "default",
-								Type:   entity.DiskTypeIso,
-							},
-							Disk: []entity.Disk{
-								{
-									Device: entity.DiskDeviceDisk,
-									Name:   "0bfb8def-86ed-4b9d-8826-66a6ab1c1491",
-									Pool:   "default",
-									Type:   entity.DiskTypeQcow2,
-								},
-							},
-						},
-						Boot:           entity.BootDeviceDisk,
-						Virtualization: entity.VirtualizationTypeKvm,
-						Daemonize:      true,
-					},
+					testVM,
 				}, nil)
 			}},
 			want: []entity.Vm{
-				{
-					VmCore: entity.VmCore{
-						Cpu:    2,
-						Memory: 1024,
-						Name:   "ubuntu",
-					},
-					ID: uuid.Must(uuid.Parse("0bfb8def-86ed-4b9d-8826-66a6ab1c1491")),
-					Devices: entity.Devices{
-						OS: entity.Disk{
-							Device: entity.DiskDeviceCdrom,
-							Name:   "ubuntu-20.04.5-live-server-amd64.iso",
-							Pool:   "default",
-							Type:   entity.DiskTypeIso,
-						},
-						Disk: []entity.Disk{
-							{
-								Device: entity.DiskDeviceDisk,
-								Name:   "0bfb8def-86ed-4b9d-8826-66a6ab1c1491",
-								Pool:   "default",
-								Type:   entity.DiskTypeQcow2,
-							},
-						},
-					},
-					Boot:           entity.BootDeviceDisk,
-					Virtualization: entity.VirtualizationTypeKvm,
-					Daemonize:      true,
-				},
+				testVM,
 			},
 			wantErr: false,
 		},
@@ -244,8 +171,6 @@ func Test_qemuUseCase_ReadAll(t *testing.T) {
 }
 
 func Test_qemuUseCase_ReadById(t *testing.T) {
-	id := uuid.Must(uuid.Parse("0bfb8def-86ed-4b9d-8826-66a6ab1c1491"))
-
 	type fields struct {
 		da func(m *mock_models.MockVmDataAccess)
 	}
@@ -262,62 +187,10 @@ func Test_qemuUseCase_ReadById(t *testing.T) {
 		{
 			name: "PASS01",
 			fields: fields{da: func(m *mock_models.MockVmDataAccess) {
-				m.EXPECT().Read(id).Return(entity.Vm{
-					VmCore: entity.VmCore{
-						Cpu:    2,
-						Memory: 1024,
-						Name:   "ubuntu",
-					},
-					ID: uuid.Must(uuid.Parse("0bfb8def-86ed-4b9d-8826-66a6ab1c1491")),
-					Devices: entity.Devices{
-						OS: entity.Disk{
-							Device: entity.DiskDeviceCdrom,
-							Name:   "ubuntu-20.04.5-live-server-amd64.iso",
-							Pool:   "default",
-							Type:   entity.DiskTypeIso,
-						},
-						Disk: []entity.Disk{
-							{
-								Device: entity.DiskDeviceDisk,
-								Name:   "0bfb8def-86ed-4b9d-8826-66a6ab1c1491",
-								Pool:   "default",
-								Type:   entity.DiskTypeQcow2,
-							},
-						},
-					},
-					Boot:           entity.BootDeviceDisk,
-					Virtualization: entity.VirtualizationTypeKvm,
-					Daemonize:      true,
-				}, nil)
+				m.EXPECT().Read(id).Return(testVM, nil)
 			}},
-			args: args{id: id},
-			want: entity.Vm{
-				VmCore: entity.VmCore{
-					Cpu:    2,
-					Memory: 1024,
-					Name:   "ubuntu",
-				},
-				ID: uuid.Must(uuid.Parse("0bfb8def-86ed-4b9d-8826-66a6ab1c1491")),
-				Devices: entity.Devices{
-					OS: entity.Disk{
-						Device: entity.DiskDeviceCdrom,
-						Name:   "ubuntu-20.04.5-live-server-amd64.iso",
-						Pool:   "default",
-						Type:   entity.DiskTypeIso,
-					},
-					Disk: []entity.Disk{
-						{
-							Device: entity.DiskDeviceDisk,
-							Name:   "0bfb8def-86ed-4b9d-8826-66a6ab1c1491",
-							Pool:   "default",
-							Type:   entity.DiskTypeQcow2,
-						},
-					},
-				},
-				Boot:           entity.BootDeviceDisk,
-				Virtualization: entity.VirtualizationTypeKvm,
-				Daemonize:      true,
-			},
+			args:    args{id: id},
+			want:    testVM,
 			wantErr: false,
 		},
 		{
@@ -354,8 +227,6 @@ func Test_qemuUseCase_ReadById(t *testing.T) {
 }
 
 func Test_qemuUseCase_Update(t *testing.T) {
-	id := uuid.Must(uuid.Parse("0bfb8def-86ed-4b9d-8826-66a6ab1c1491"))
-
 	type fields struct {
 		da  func(m *mock_models.MockVmDataAccess)
 		vnc func(m *mock_models.MockSocket)
@@ -379,33 +250,7 @@ func Test_qemuUseCase_Update(t *testing.T) {
 						Cpu:    2,
 						Memory: 1024,
 						Name:   "ubuntu",
-					}).Return(entity.Vm{
-						VmCore: entity.VmCore{
-							Cpu:    2,
-							Memory: 1024,
-							Name:   "ubuntu",
-						},
-						ID: uuid.Must(uuid.Parse("0bfb8def-86ed-4b9d-8826-66a6ab1c1491")),
-						Devices: entity.Devices{
-							OS: entity.Disk{
-								Device: entity.DiskDeviceCdrom,
-								Name:   "ubuntu-20.04.5-live-server-amd64.iso",
-								Pool:   "default",
-								Type:   entity.DiskTypeIso,
-							},
-							Disk: []entity.Disk{
-								{
-									Device: entity.DiskDeviceDisk,
-									Name:   "0bfb8def-86ed-4b9d-8826-66a6ab1c1491",
-									Pool:   "default",
-									Type:   entity.DiskTypeQcow2,
-								},
-							},
-						},
-						Boot:           entity.BootDeviceDisk,
-						Virtualization: entity.VirtualizationTypeKvm,
-						Daemonize:      true,
-					}, nil)
+					}).Return(testVM, nil)
 				},
 				vnc: func(m *mock_models.MockSocket) {
 					m.EXPECT().SearchFor(id).Return(false)
@@ -419,33 +264,7 @@ func Test_qemuUseCase_Update(t *testing.T) {
 					Name:   "ubuntu",
 				},
 			},
-			want: entity.Vm{
-				VmCore: entity.VmCore{
-					Cpu:    2,
-					Memory: 1024,
-					Name:   "ubuntu",
-				},
-				ID: uuid.Must(uuid.Parse("0bfb8def-86ed-4b9d-8826-66a6ab1c1491")),
-				Devices: entity.Devices{
-					OS: entity.Disk{
-						Device: entity.DiskDeviceCdrom,
-						Name:   "ubuntu-20.04.5-live-server-amd64.iso",
-						Pool:   "default",
-						Type:   entity.DiskTypeIso,
-					},
-					Disk: []entity.Disk{
-						{
-							Device: entity.DiskDeviceDisk,
-							Name:   "0bfb8def-86ed-4b9d-8826-66a6ab1c1491",
-							Pool:   "default",
-							Type:   entity.DiskTypeQcow2,
-						},
-					},
-				},
-				Boot:           entity.BootDeviceDisk,
-				Virtualization: entity.VirtualizationTypeKvm,
-				Daemonize:      true,
-			},
+			want:    testVM,
 			wantErr: false,
 		},
 		{
@@ -520,8 +339,6 @@ func Test_qemuUseCase_Update(t *testing.T) {
 }
 
 func Test_qemuUseCase_Delete(t *testing.T) {
-	id := uuid.Must(uuid.Parse("0bfb8def-86ed-4b9d-8826-66a6ab1c1491"))
-
 	type fields struct {
 		da   func(m *mock_models.MockVmDataAccess)
 		disk func(m *mock_models.MockDisk)
