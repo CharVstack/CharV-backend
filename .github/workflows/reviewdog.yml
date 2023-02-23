@@ -16,6 +16,7 @@ jobs:
           tool_name: golangci-lint
           level: warning
           reporter: github-pr-review
+          go_version_file: ./go.mod
 
   misspell:
     name: runner / misspell
