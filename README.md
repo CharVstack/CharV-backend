@@ -1,5 +1,6 @@
 # CharV-backend
 [![codecov](https://codecov.io/gh/CharVstack/CharV-backend/branch/main/graph/badge.svg?token=GJOQH6VXLA)](https://codecov.io/gh/CharVstack/CharV-backend)
+
 CharV-backend は、CharVstack のバックエンドです。
 
 ## 開発の環境構築
