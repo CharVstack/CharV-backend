@@ -12,10 +12,11 @@ jobs:
       - name: run golangci-lint
         uses: reviewdog/action-golangci-lint@v2
         with:
-          golangci_lint_flags: "-E unparam gci"
+          golangci_lint_flags: "-E unparam -E gci"
           tool_name: golangci-lint
           level: warning
           reporter: github-pr-review
+          go_version_file: ./go.mod
 
   misspell:
     name: runner / misspell
